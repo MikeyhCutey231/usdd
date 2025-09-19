@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Clock } from 'lucide-react';
+import { Clock, FileText } from 'lucide-react';
 
 const PetitionCard = ({ petition }) => {
   const today = new Date().toLocaleDateString('en-US', {
@@ -76,11 +76,18 @@ const Petitions = () => {
         <div className="w-3 h-3 bg-primary rounded-full mr-2"></div>
         <span>{petitions.filter(p => p.isActive).length} Active Petitions</span>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {petitions.map((petition, index) => (
-          <PetitionCard key={index} petition={petition} />
-        ))}
-      </div>
+      {petitions.length === 0 ? (
+        <div className="flex flex-col items-center justify-center text-center text-gray-400 h-64">
+          <FileText size={48} className="mb-4" />
+          <p>No petitions created at the moment.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {petitions.map((petition, index) => (
+            <PetitionCard key={index} petition={petition} />
+          ))}
+        </div>
+      )}
     </main>
   );
 };
