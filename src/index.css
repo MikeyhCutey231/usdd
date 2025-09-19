@@ -1,0 +1,110 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap");
+
+@import "tailwindcss";
+
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+    --color-primary: #FAD83B;
+    --color-secondary: #1A1A1A;
+    --color-primary-text: #222222;
+    --color-tertiary: #222222;
+    --color-black: #222222;
+    --color-darkGray: #222222;
+    --color-lightGray: #222222;
+    --color-whiteGray: #FAFAFA;
+    --font-dm-sans: DM Sans, sans-serif;
+    --breakpoint-xs: 480px;
+}
+
+html, body, #root {
+  height: 100%;
+  /* overflow-x: hidden; */
+  font-family: var(--font-dm-sans);
+}
+
+button {
+  cursor: pointer;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1A1A1A;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Scrollbar Arrows */
+::-webkit-scrollbar-button:start:decrement,
+::-webkit-scrollbar-button:end:increment {
+    display: block;
+    height: 18px;
+    background-color: #1A1A1A;
+}
+
+::-webkit-scrollbar-button:start:decrement {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%23888"><path d="M7.247 4.86l-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+::-webkit-scrollbar-button:end:increment {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%23888"><path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.react-select-container .react-select__control {
+  background-color: #222222;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+}
+
+.react-select-container .react-select__input-container {
+  color: white;
+}
+
+.react-select-container .react-select__multi-value {
+  background-color: #333333;
+}
+
+.react-select-container .react-select__multi-value__label {
+  color: white;
+}
+
+.react-select-container .react-select__menu {
+  background-color: #222222;
+}
+
+.react-select-container .react-select__option {
+  background-color: #222222;
+  color: white;
+}
+
+.react-select-container .react-select__option--is-focused {
+  background-color: #555555 !important;
+  color: white !important;
+}
+
+.react-select-container .react-select__option--is-selected {
+  background-color: #333333;
+}
+
+.form-radio:checked {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+}
