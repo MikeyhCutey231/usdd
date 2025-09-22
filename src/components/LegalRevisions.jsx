@@ -105,9 +105,15 @@ const LegalRevisions = () => {
         </div>
       </div>
       <div className="space-y-8">
-        {legalRevisions.map((legalRevision, index) => (
-          <LegalRevisionCard key={index} legalRevision={legalRevision} />
-        ))}
+        {legalRevisions.length > 0 ? (
+          legalRevisions.map((legalRevision, index) => (
+            <LegalRevisionCard key={index} legalRevision={legalRevision} />
+          ))
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-xl text-gray-500">There are currently no available legal revision</p>
+          </div>
+        )}
       </div>
     </main>
   );

@@ -100,9 +100,15 @@ const Votes = () => {
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {legalRevisions.map((legalRevision, index) => (
-          <VoteCard key={index} legalRevision={legalRevision} />
-        ))}
+        {legalRevisions.length > 0 ? (
+          legalRevisions.map((legalRevision, index) => (
+            <VoteCard key={index} legalRevision={legalRevision} />
+          ))
+        ) : (
+          <div className="text-center py-12 col-span-3">
+            <p className="text-xl text-gray-500">No Bill to be voted at the moment</p>
+          </div>
+        )}
       </div>
     </main>
   );
