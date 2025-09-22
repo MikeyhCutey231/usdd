@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, FileText, Landmark, Tag, Star, Users, Archive, Settings, ChevronDown, X } from 'lucide-react';
+import { Vote, Home, FileText, Landmark, Tag, Star, Users, Archive, Settings, ChevronDown, X } from 'lucide-react';
 
 const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const location = useLocation();
@@ -35,18 +35,24 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
                     Petitions
                   </Link>
                 </li>
-                <li className="mb-2">
-                  <Link to="/state-elections" onClick={handleLinkClick} className={`flex items-center p-3 rounded-lg hover:bg-primary-text ${location.pathname === '/state-elections' ? 'bg-primary-text' : ''}`}>
-                    <Landmark size={20} className="mr-3" />
-                    State Elections
-                  </Link>
-                </li>
-                <li className="mb-2">
-                  <Link to="/legislations" onClick={handleLinkClick} className={`flex items-center p-3 rounded-lg hover:bg-primary-text ${location.pathname === '/legislations' ? 'bg-primary-text' : ''}`}>
-                    <FileText size={20} className="mr-3" />
-                    Legislations
-                  </Link>
-                </li>
+                  <li className="mb-2">
+                      <Link to="/legal-revisions" onClick={handleLinkClick} className={`flex items-center p-3 rounded-lg hover:bg-primary-text ${location.pathname.startsWith('/legal-revision') ? 'bg-primary-text' : ''}`}>
+                          <FileText size={20} className="mr-3" />
+                          Legal Revisions
+                      </Link>
+                  </li>
+                  <li className="mb-2">
+                    <Link to="/votes" onClick={handleLinkClick} className={`flex items-center p-3 rounded-lg hover:bg-primary-text ${location.pathname.startsWith('/vote') ? 'bg-primary-text' : ''}`}>
+                        <Vote size={20} className="mr-3" />
+                        Votes
+                    </Link>
+                  </li>
+                  <li className="mb-2">
+                      <Link to="/state-elections" onClick={handleLinkClick} className={`flex items-center p-3 rounded-lg hover:bg-primary-text ${location.pathname === '/state-elections' ? 'bg-primary-text' : ''}`}>
+                          <Landmark size={20} className="mr-3" />
+                          Elections
+                      </Link>
+                  </li>
                 <li className="mb-2">
                   <a href="#" className="flex items-center p-3 rounded-lg hover:bg-primary-text">
                     <Tag size={20} className="mr-3" />
@@ -135,7 +141,7 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
               </ul>
             </div>
             <div className="mt-8 md:hidden">
-              <Link to="/profile" className="flex items-center p-3 rounded-lg hover:bg-primary-text">
+              <Link to="/profile" onClick={handleLinkClick} className="flex items-center p-3 rounded-lg hover:bg-primary-text">
                 <img src="https://i.pravatar.cc/40" alt="Michael C. Labastida" className="rounded-full mr-4" />
                 <div>
                   <p className="font-bold">Michael C. Labastida</p>

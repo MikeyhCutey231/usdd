@@ -9,11 +9,15 @@ import ForumDetails from './components/ForumDetails';
 import Petitions from './components/Petitions';
 import PetitionDetails from './components/PetitionDetails';
 import StateElections from './components/StateElections';
-import Legislations from './components/Legislations';
-import LegislationVotingDetails from './components/LegislationVotingDetails';
+import LegalRevisions from './components/LegalRevisions';
+import LegalRevisionDetails from './components/LegalRevisionDetails';
+import VoteLegalRevision from './components/VoteLegalRevision';
+import DraftingLegalRevision from './components/DraftingLegalRevision';
+import Votes from './components/Votes';
 import AccountProfile from './components/AccountProfile';
 import PostDetails from './components/PostDetails';
 import ForumToPetition from './components/ForumToPetition';
+import SuggestEdit from './components/SuggestEdit';
 
 const AppContent = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -21,14 +25,23 @@ const AppContent = () => {
   const showSidebar = !location.pathname.startsWith('/profile') && !location.pathname.startsWith('/forum-to-petition');
 
   useEffect(() => {
-    const checkLegislations = () => {
-      console.log('Checking legislations...');
-      const legislations = JSON.parse(localStorage.getItem('legislations')) || [];
-      const today = new Date().setHours(0, 0, 0, 0);
+    setIsSidebarOpen(false);
+  }, [location]);
+
+  useEffect(() => {
+    const checkLegalRevisions = () => {
+      const legalRevisions = JSON.parse(localStorage.getItem('legalRevisions')) || [];
+      
+      const phTime = new Date().toLocaleString('en-US', { timeZone: 'Asia/Manila' });
+      const today = new Date(phTime);
+      today.setHours(0, 0, 0, 0);
+
       let updated = false;
-      const updatedLegislations = legislations.map(leg => {
-        const startDate = new Date(leg.date?.from).setHours(0, 0, 0, 0);
-        if (today >= startDate && leg.isActive === false) {
+      const updatedLegalRevisions = legalRevisions.map(leg => {
+        const endDate = new Date(leg.date?.to);
+        endDate.setHours(0, 0, 0, 0);
+
+        if (today.getTime() >= endDate.getTime() && leg.isActive === false) {
           updated = true;
           return { ...leg, isActive: true };
         }
@@ -36,11 +49,10 @@ const AppContent = () => {
       });
 
       if (updated) {
-        console.log('Updated legislations:', updatedLegislations);
-        localStorage.setItem('legislations', JSON.stringify(updatedLegislations));
+        localStorage.setItem('legalRevisions', JSON.stringify(updatedLegalRevisions));
       }
     };
-    checkLegislations();
+    checkLegalRevisions();
   }, []);
 
   return (
@@ -48,18 +60,22 @@ const AppContent = () => {
       <Header setIsSidebarOpen={setIsSidebarOpen} />
         <div className="flex">
           {showSidebar && (
-            <div className="hidden md:block md:border-r md:border-[#222222]">
+            <div className="hidden md:block md:w-72 md:border-r md:border-[#222222]">
               <Sidebar />
             </div>
           )}
-          <div className="flex-1">
+          <div className={`flex-1 overflow-y-auto no-scrollbar ${location.pathname.startsWith('/profile') ? 'z-0' : ''}`}>
           <Routes>
             <Route path="/" element={<Forum />} />
             <Route path="/petitions" element={<Petitions />} />
             <Route path="/petition/:id" element={<PetitionDetails />} />
             <Route path="/state-elections" element={<StateElections />} />
-            <Route path="/legislations" element={<Legislations />} />
-            <Route path="/legislation/:id" element={<LegislationVotingDetails />} />
+            <Route path="/legal-revisions" element={<LegalRevisions />} />
+            <Route path="/votes" element={<Votes />} />
+            <Route path="/legal-revision/:id" element={<LegalRevisionDetails />} />
+            <Route path="/vote-legal-revision/:id" element={<VoteLegalRevision />} />
+            <Route path="/drafting-legal-revision/:id" element={<DraftingLegalRevision />} />
+            <Route path="/legal-revision/:id/suggest-edit" element={<SuggestEdit />} />
             <Route path="/profile" element={<AccountProfile />} />
             <Route path="/post/:id" element={<ForumDetails />} />
             <Route path="/profile/post/:id" element={<PostDetails />} />
@@ -68,7 +84,7 @@ const AppContent = () => {
           </Routes>
         </div>
       </div>
-      {isSidebarOpen && showSidebar && (
+      {isSidebarOpen && (
         <>
           <div className="md:hidden fixed inset-0 bg-black opacity-50 z-30" onClick={() => setIsSidebarOpen(false)}></div>
           <div className="md:hidden fixed inset-y-0 left-0 z-40">

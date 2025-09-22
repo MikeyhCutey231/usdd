@@ -7,7 +7,7 @@ const Header = ({ setIsSidebarOpen }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   return (
-    <header className="bg-secondary text-white py-4 px-8 flex justify-between items-center border-b border-primary-text">
+    <header className="bg-secondary text-white py-4 px-8 flex justify-between items-center border-b border-primary-text relative z-10">
       <div className="flex items-center">
         <Link to="/" className="text-center">
           <h1 className="text-2xl font-extrabold text-primary leading-tight">Universal Secure</h1>
@@ -57,7 +57,9 @@ const Header = ({ setIsSidebarOpen }) => {
         </div>
       </div>
       <div className="md:hidden">
-        <button onClick={() => setIsSidebarOpen(true)}>
+        <button onClick={() => {
+          setIsSidebarOpen(true);
+        }}>
           <Menu size={24} />
         </button>
       </div>

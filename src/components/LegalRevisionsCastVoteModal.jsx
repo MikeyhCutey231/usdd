@@ -1,8 +1,44 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { X, AlarmClock, HelpCircle, Download } from 'lucide-react';
+import { v4 as uuidv4 } from 'uuid';
 
-const LegislationCastVoteModal = ({ isOpen, onClose }) => {
+const LegalRevisionsCastVoteModal = ({ isOpen, onClose, legalRevision, post }) => {
+  const [voted, setVoted] = useState(null);
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [transactionId, setTransactionId] = useState(null);
+
   if (!isOpen) return null;
+
+  const handleVote = () => {
+    if (!selectedOption) return;
+
+    setTransactionId(`0x${uuidv4().replace(/-/g, '')}`);
+    const storedLegalRevisions = JSON.parse(localStorage.getItem('legalRevisions')) || [];
+    const updatedRevisions = storedLegalRevisions.map(rev => {
+      if (rev.id === legalRevision.id) {
+        const newVote = { ...rev.vote };
+        const currentVote = rev.voted;
+
+        if (currentVote) {
+          if (currentVote === 'yes') {
+            newVote.yes -= 1;
+          } else if (currentVote === 'no') {
+            newVote.no -= 1;
+          }
+        }
+
+        if (selectedOption === 'yes') {
+          newVote.yes += 1;
+        } else if (selectedOption === 'no') {
+          newVote.no += 1;
+        }
+        return { ...rev, vote: newVote, voted: selectedOption };
+      }
+      return rev;
+    });
+    localStorage.setItem('legalRevisions', JSON.stringify(updatedRevisions));
+    setVoted(selectedOption);
+  };
 
   return (
     <div className="fixed inset-0 bg-opacity-50 z-50 flex justify-end backdrop-blur-sm">
@@ -34,19 +70,19 @@ const LegislationCastVoteModal = ({ isOpen, onClose }) => {
         <div className="p-8">
           <div className="mb-8">
             <p className="text-xs font-semibold text-[#707070] mb-1">TITLE</p>
-            <p className="text-lg font-normal text-[#EFEFEF]">EACC Road to T9 Finals</p>
+            <p className="text-lg font-normal text-[#EFEFEF]">{legalRevision.title}</p>
           </div>
           <div className="mb-8">
             <p className="text-xs font-semibold text-[#707070] mb-1">DESCRIPTION</p>
-            <p className="font-normal text-[#EFEFEF]">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.</p>
+            <p className="font-normal text-[#EFEFEF]">{post.content}</p>
           </div>
           <div className="mb-4">
             <p className="text-xs font-semibold text-[#707070]">CREATED BY</p>
             <div className="flex items-center mt-2">
-              <img src="https://i.pravatar.cc/40" alt="Michael C. Labastida" className="rounded-full mr-4" />
+              <img src="https://i.pravatar.cc/40" alt={post.author} className="rounded-full mr-4" />
               <div>
-                <p className="font-bold text-white">Michael C. Labastida</p>
-                <p className="text-sm text-[#EFEFEF]">Posted by: 14 hrs ago</p>
+                <p className="font-bold text-white">{post.author}</p>
+                <p className="text-sm text-[#EFEFEF]">Posted on {new Date(legalRevision.date.from).toLocaleDateString()}</p>
               </div>
             </div>
           </div>
@@ -55,30 +91,27 @@ const LegislationCastVoteModal = ({ isOpen, onClose }) => {
           <p className="text-xs text-[#707070] font-semibold mb-4">SELECT AN OPTION:</p>
           <div className="flex items-center space-x-8 mb-8">
             <label className="flex items-center">
-              <input type="radio" name="vote" className="h-5 w-5 appearance-none rounded-full border border-gray-600 bg-[#2F2F2F] checked:bg-primary" />
+              <input type="radio" name="vote" className="h-5 w-5 appearance-none rounded-full border border-gray-600 bg-[#2F2F2F] checked:bg-primary" onChange={() => setSelectedOption('yes')} />
               <span className="ml-2 text-white">Vote Yes</span>
             </label>
             <label className="flex items-center">
-              <input type="radio" name="vote" className="h-5 w-5 appearance-none rounded-full border border-gray-600 bg-[#2F2F2F] checked:bg-primary" />
+              <input type="radio" name="vote" className="h-5 w-5 appearance-none rounded-full border border-gray-600 bg-[#2F2F2F] checked:bg-primary" onChange={() => setSelectedOption('no')} />
               <span className="ml-2 text-white">Vote No</span>
             </label>
-            <label className="flex items-center">
-              <input type="radio" name="vote" className="h-5 w-5 appearance-none rounded-full border border-gray-600 bg-[#2F2F2F] checked:bg-primary" />
-              <span className="ml-2 text-white">Abstain</span>
-            </label>
           </div>
-          <button className="w-full bg-gray-700 text-white font-bold py-3 rounded-lg">Cast Secure Vote</button>
+          <button onClick={handleVote} className="w-full bg-primary text-black font-bold py-3 rounded-lg">Cast Secure Vote</button>
         </div>
-        <div className="p-8">
-          <div className="mt-4">
-            <h3 className="text-2xl font-bold mb-4 text-white">Official Voter Receipt</h3>
+        {voted && (
+          <div className="p-8">
+            <div className="mt-4">
+              <h3 className="text-2xl font-bold mb-4 text-white">Official Voter Receipt</h3>
             <div className="space-y-4 text-sm">
               <p className='text-[#DDDDDD]'><span className="font-bold text-white">Election:</span> Bill #2025-04: The Community Garden Act</p>
               <p className='text-[#DDDDDD]'><span className="font-bold text-white">Status:</span> Your vote has been securely recorded.</p>
               <p className='text-[#DDDDDD]'><span className="font-bold text-white">Timestamp:</span> 16/09/2025, 03:01:23</p>
               <p className="font-bold text-white">Verification Transaction ID:</p>
               <div className="bg-[#AC952F] border border-[#FAD83B] text-white font-semibold rounded-lg p-4">
-                <p>0xdad086e1065bb1c1d266e39ddd159d9fa6a0b89</p>
+                <p>{transactionId}</p>
               </div>
               <p className="text-xs text-gray-400">Use this ID on a public block explorer to confirm your vote was tallied. Your choice remains private to protect against coercion.</p>
             </div>
@@ -88,9 +121,10 @@ const LegislationCastVoteModal = ({ isOpen, onClose }) => {
             </button>
           </div>
         </div>
+        )}
       </div>
     </div>
   );
 };
 
-export default LegislationCastVoteModal;
+export default LegalRevisionsCastVoteModal;

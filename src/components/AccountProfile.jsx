@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { Search, Filter, MoreHorizontal, Eye, User, Shield, MessageSquare, FileText, Landmark } from 'lucide-react';
 
@@ -114,15 +114,29 @@ const PetitionCard = ({ id, title, description, signatures, goal }) => (
   </Link>
 );
 
-const LegislationCard = ({ title, status, totalCount }) => (
-  <div className="bg-[#222222] p-4 rounded-lg">
-    <h4 className="font-bold text-lg mb-2">{title}</h4>
-    <div className="flex justify-between items-center text-sm">
-      <p className="text-gray-400">Status: <span className={status === 'Voting Phase' ? 'text-[#41B883]' : 'text-[#FFAF03]'}>{status}</span></p>
-      <p className="text-gray-400">Total Count: <span className="text-white">{totalCount}</span></p>
+const LegalRevisionCard = ({ legalRevision }) => {
+  const navigate = useNavigate();
+  const status = legalRevision.isActive ? 'Voting Phase' : 'Drafting Phase';
+  const statusColor = legalRevision.isActive ? 'text-green-500' : 'text-[#FFAF03]';
+
+  const handleClick = () => {
+    if (legalRevision.isActive) {
+      navigate(`/vote-legal-revision/${legalRevision.id}`);
+    } else {
+      navigate(`/drafting-legal-revision/${legalRevision.id}`);
+    }
+  };
+
+  return (
+    <div onClick={handleClick} className="bg-[#222222] p-4 rounded-lg cursor-pointer">
+      <h4 className="font-bold text-lg mb-2">{legalRevision.title}</h4>
+      <div className="flex justify-between items-center text-sm">
+        <p className="text-gray-400">Status: <span className={statusColor}>{status}</span></p>
+        <p className="text-gray-400">Total Vote Count: <span className="text-white">{legalRevision.vote.yes + legalRevision.vote.no}</span></p>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const PetitionsContent = () => {
   const [petitions, setPetitions] = useState([]);
@@ -150,31 +164,29 @@ const PetitionsContent = () => {
   );
 };
 
-const LegislationsContent = () => {
-  const [legislations, setLegislations] = useState([]);
+const LegalRevisionsContent = () => {
+  const [legalRevisions, setLegalRevisions] = useState([]);
 
   useEffect(() => {
-    const storedLegislations = JSON.parse(localStorage.getItem('legislations')) || [];
-    setLegislations(storedLegislations);
+    const storedLegalRevisions = JSON.parse(localStorage.getItem('legalRevisions')) || [];
+    setLegalRevisions(storedLegalRevisions);
   }, []);
 
   return (
     <div>
-      {legislations.length > 0 ? (
+      {legalRevisions.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {legislations.map(legislation => (
-            <LegislationCard
-              key={legislation.id}
-              title={legislation.title}
-              status={legislation.isActive ? 'Voting Phase' : 'Drafting Phase'}
-              totalCount={legislation.yes + legislation.no + legislation.abstain}
+          {legalRevisions.map(legalRevision => (
+            <LegalRevisionCard
+              key={legalRevision.id}
+              legalRevision={legalRevision}
             />
           ))}
         </div>
       ) : (
         <div className="text-center py-20">
           <Landmark size={48} className="mx-auto text-gray-500" />
-          <p className="mt-4 text-lg text-gray-500">You have not created any legislations.</p>
+          <p className="mt-4 text-lg text-gray-500">You have not created any legal revisions.</p>
         </div>
       )}
     </div>
@@ -226,8 +238,8 @@ const AccountProfile = () => {
         );
       case 'Petitions':
         return <PetitionsContent />;
-      case 'Legislations':
-        return <LegislationsContent />;
+      case 'Legal Revisions':
+        return <LegalRevisionsContent />;
       default:
         return null;
     }
@@ -235,13 +247,13 @@ const AccountProfile = () => {
 
   return (
     <main className="flex-1 bg-[#1A1A1A] text-white">
-      <div className="flex">
-        <div className="w-2/3 p-10 pr-8">
+      <div className="flex flex-col lg:flex-row">
+        <div className="w-full lg:w-2/3 p-10 pr-8">
           <h2 className="text-3xl font-bold mb-6">@labastida1823</h2>
           <div className="flex space-x-8 border-b border-[#222222] mb-6">
             <button onClick={() => setActiveTab('Posts')} className={`py-2 ${activeTab === 'Posts' ? 'border-b-2 border-yellow-500 text-yellow-500' : 'text-gray-400'}`}>Posts</button>
             <button onClick={() => setActiveTab('Petitions')} className={`py-2 ${activeTab === 'Petitions' ? 'border-b-2 border-yellow-500 text-yellow-500' : 'text-gray-400'}`}>Petitions</button>
-            <button onClick={() => setActiveTab('Legislations')} className={`py-2 ${activeTab === 'Legislations' ? 'border-b-2 border-yellow-500 text-yellow-500' : 'text-gray-400'}`}>Legislations</button>
+            <button onClick={() => setActiveTab('Legal Revisions')} className={`py-2 ${activeTab === 'Legal Revisions' ? 'border-b-2 border-yellow-500 text-yellow-500' : 'text-gray-400'}`}>Legal Revisions</button>
             <button className="py-2 text-gray-400">Comments</button>
             <button className="py-2 text-gray-400">Reported</button>
           </div>
@@ -261,7 +273,7 @@ const AccountProfile = () => {
           </div>
           {renderContent()}
         </div>
-        <div className="w-1/3 border-l border-[#222222]">
+        <div className="w-full lg:w-1/3 lg:border-l border-[#222222]">
           <div className="p-6 pr-12 rounded-lg">
             <div className="flex items-center mb-4">
               <img src="https://i.pravatar.cc/60" alt="Michael C. Labastida" className="rounded-full mr-4" />

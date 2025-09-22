@@ -1,8 +1,10 @@
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap");
 
+@import "./components/tiptap-templates/simple/simple-editor.scss";
 @import "tailwindcss";
-
 @import "tw-animate-css";
+@import './styles/_variables.scss';
+@import './styles/_keyframe-animations.scss';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -107,4 +109,13 @@ button {
 .form-radio:checked {
   background-color: var(--color-primary) !important;
   border-color: var(--color-primary) !important;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

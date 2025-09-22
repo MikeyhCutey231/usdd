@@ -6,7 +6,7 @@ import { ThumbsUp, MessageCircle, Reply, Eye, Flag, MessageSquare, ChevronDown, 
 import SignatureModal from './SignatureModal';
 import ProposedSolutionModal from './ProposedSolutionModal';
 import WithdrawPetitionModal from './WithdrawPetitionModal';
-import DraftLegislationModal from './DraftLegislationModal';
+import DraftLegalRevisionModal from './DraftLegalRevisionsModal';
 
 const PetitionDetails = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -16,6 +16,7 @@ const PetitionDetails = () => {
   const [petition, setPetition] = useState(null);
   const [post, setPost] = useState(null);
   const [comment, setComment] = useState('');
+  const [isDrafted, setIsDrafted] = useState(false);
   const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
@@ -25,6 +26,10 @@ const PetitionDetails = () => {
     const storedPetitions = JSON.parse(localStorage.getItem('petitions')) || [];
     const currentPetition = storedPetitions.find(p => p.id === id);
     setPetition(currentPetition);
+
+    const storedLegalRevisions = JSON.parse(localStorage.getItem('legalRevisions')) || [];
+    const drafted = storedLegalRevisions.some(rev => rev.petition_id === id);
+    setIsDrafted(drafted);
 
     if (currentPetition) {
       const storedPosts = JSON.parse(localStorage.getItem('posts')) || [];
@@ -181,16 +186,24 @@ const PetitionDetails = () => {
               </div>
               <div className="flex items-stretch">
                 {pageName === 'accountProfilePetition' ? (
-                  <button onClick={() => setIsDraftModalOpen(true)} className="w-full bg-primary text-black font-bold py-2 px-4 rounded-lg">Draft Legislation</button>
+                  <button
+                    onClick={() => setIsDraftModalOpen(true)}
+                    className={`w-full font-bold py-2 px-4 rounded-lg ${
+                      isDrafted ? 'bg-gray-600 text-gray-400 cursor-not-allowed' : 'bg-primary text-black'
+                    }`}
+                    disabled={isDrafted}
+                  >
+                    {isDrafted ? 'Drafted' : 'Draft Legal Revision'}
+                  </button>
                 ) : (
                   <button
                     onClick={() => setIsModalOpen(true)}
                     className={`w-full font-bold py-2 px-4 rounded-lg ${
-                      petition.signedUsers?.includes('current_user_id') // Replace 'current_user_id'
+                      petition.signedUsers?.includes('current_user_id') || petition.signature_count >= 5000
                         ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
                         : 'bg-primary text-black'
                     }`}
-                    disabled={petition.signedUsers?.includes('current_user_id')} // Replace 'current_user_id'
+                    disabled={petition.signedUsers?.includes('current_user_id') || petition.signature_count >= 5000}
                   >
                     {petition.signedUsers?.includes('current_user_id') ? 'Signed' : 'Vote Signature'}
                   </button>
@@ -268,7 +281,7 @@ const PetitionDetails = () => {
         onClose={() => setIsWithdrawModalOpen(false)}
         onConfirm={handleWithdraw}
       />
-      <DraftLegislationModal
+      <DraftLegalRevisionModal
         isOpen={isDraftModalOpen}
         onClose={() => setIsDraftModalOpen(false)}
         petition={petition}
