@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Filter, ChevronDown } from 'lucide-react';
+import { Search, Filter, ChevronDown, FileText } from 'lucide-react';
 
 const VoteCard = ({ legalRevision }) => {
 
@@ -105,7 +105,8 @@ const Votes = () => {
             <VoteCard key={index} legalRevision={legalRevision} />
           ))
         ) : (
-          <div className="text-center py-12 col-span-3">
+          <div className="flex flex-col items-center justify-center text-center py-12 col-span-3">
+            <FileText size={48} className="mb-4 text-gray-500" />
             <p className="text-xl text-gray-500">No Bill to be voted at the moment</p>
           </div>
         )}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Filter, ChevronDown } from 'lucide-react';
+import { Search, Filter, ChevronDown, FileText } from 'lucide-react';
 
 const LegalRevisionCard = ({ legalRevision }) => {
   const dates = legalRevision.date ? `${new Date(legalRevision.date.from).toLocaleDateString()} - ${new Date(legalRevision.date.to).toLocaleDateString()}` : 'No dates specified';
@@ -110,7 +110,8 @@ const LegalRevisions = () => {
             <LegalRevisionCard key={index} legalRevision={legalRevision} />
           ))
         ) : (
-          <div className="text-center py-12">
+          <div className="flex flex-col items-center justify-center text-center py-12">
+            <FileText size={48} className="mb-4 text-gray-500" />
             <p className="text-xl text-gray-500">There are currently no available legal revision</p>
           </div>
         )}
