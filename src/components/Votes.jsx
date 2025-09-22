@@ -69,48 +69,50 @@ const Votes = () => {
 
   return (
     <main className="flex-1 p-12 bg-[#1A1A1A] text-white">
-      <div className="flex justify-between items-center mb-8">
-        <h2 className="text-4xl font-bold">Votes</h2>
-        <div className="flex items-center space-x-4">
-          <div className="relative">
-            <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search for a vote..."
-              className="bg-[#222222] text-white rounded-lg py-2 pl-10 pr-4"
-            />
-          </div>
-          <div className="relative">
-            <button onClick={() => setIsFilterOpen(!isFilterOpen)} className="flex items-center bg-[#222222] text-white rounded-lg py-2 px-4">
-              <Filter size={20} className="mr-2" />
-              Filter
-            </button>
-            {isFilterOpen && (
-              <div className="absolute right-0 mt-2 w-96 bg-[#222222] rounded-lg shadow-lg p-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">Date</label>
-                  <div className="grid grid-cols-2 gap-2">
-                    <input type="date" className="w-full bg-[#333333] text-white rounded-lg p-2" />
-                    <input type="date" className="w-full bg-[#333333] text-white rounded-lg p-2" />
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
+      {legalRevisions.length === 0 ? (
+        <div className="flex flex-col items-center justify-center text-center text-gray-400 h-full pt-50">
+          <FileText size={48} className="mb-4" />
+          <p>No Bill to be voted at the moment</p>
         </div>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {legalRevisions.length > 0 ? (
-          legalRevisions.map((legalRevision, index) => (
-            <VoteCard key={index} legalRevision={legalRevision} />
-          ))
-        ) : (
-          <div className="flex flex-col items-center justify-center text-center py-12 col-span-3">
-            <FileText size={48} className="mb-4 text-gray-500" />
-            <p className="text-xl text-gray-500">No Bill to be voted at the moment</p>
+      ) : (
+        <>
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-4xl font-bold">Votes</h2>
+            <div className="flex items-center space-x-4">
+              <div className="relative">
+                <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search for a vote..."
+                  className="bg-[#222222] text-white rounded-lg py-2 pl-10 pr-4"
+                />
+              </div>
+              <div className="relative">
+                <button onClick={() => setIsFilterOpen(!isFilterOpen)} className="flex items-center bg-[#222222] text-white rounded-lg py-2 px-4">
+                  <Filter size={20} className="mr-2" />
+                  Filter
+                </button>
+                {isFilterOpen && (
+                  <div className="absolute right-0 mt-2 w-96 bg-[#222222] rounded-lg shadow-lg p-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-400 mb-2">Date</label>
+                      <div className="grid grid-cols-2 gap-2">
+                        <input type="date" className="w-full bg-[#333333] text-white rounded-lg p-2" />
+                        <input type="date" className="w-full bg-[#333333] text-white rounded-lg p-2" />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
-        )}
-      </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {legalRevisions.map((legalRevision, index) => (
+              <VoteCard key={index} legalRevision={legalRevision} />
+            ))}
+          </div>
+        </>
+      )}
     </main>
   );
 };
