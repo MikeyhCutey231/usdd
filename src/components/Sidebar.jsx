@@ -53,103 +53,46 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
                           Elections
                       </Link>
                   </li>
-                <li className="mb-2">
-                  <a href="#" className="flex items-center p-3 rounded-lg hover:bg-primary-text">
-                    <Tag size={20} className="mr-3" />
-                    Tags
-                  </a>
-                </li>
-                <li className="mb-2">
-                  <a href="#" className="flex items-center p-3 rounded-lg hover:bg-primary-text">
-                    <Star size={20} className="mr-3" />
-                    Popular
-                  </a>
-                </li>
               </ul>
             </nav>
 
-            <hr className="border-t border-primary-text my-8" />
+              <div>
+                  <hr className="border-t border-primary-text my-8" />
 
-            <div>
-              <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-sm font-semibold text-[#BBBBBB] tracking-wider">TRENDING</h2>
-                  <ChevronDown size={20} className="text-[#BBBBBB]" />
+                  <div>
+                      <ul>
+                          <li className="mb-2">
+                              <a href="#" className="flex items-center p-3 rounded-lg hover:bg-primary-text">
+                                  <Users size={20} className="mr-3" />
+                                  Community
+                              </a>
+                          </li>
+                          <li className="mb-2">
+                              <a href="#" className="flex items-center p-3 rounded-lg hover:bg-primary-text">
+                                  <Archive size={20} className="mr-3" />
+                                  Resources
+                              </a>
+                          </li>
+                          <li>
+                              <a href="#" className="flex items-center p-3 rounded-lg hover:bg-primary-text">
+                                  <Settings size={20} className="mr-3" />
+                                  Settings
+                              </a>
+                          </li>
+                      </ul>
+                  </div>
+                  <div className="mt-8 md:hidden">
+                      <Link to="/profile" onClick={handleLinkClick} className="flex items-center p-3 rounded-lg hover:bg-primary-text">
+                          <img src="https://i.pravatar.cc/40" alt="Michael C. Labastida" className="rounded-full mr-4" />
+                          <div>
+                              <p className="font-bold">Michael C. Labastida</p>
+                              <p className="text-sm text-gray-400">View Profile</p>
+                          </div>
+                      </Link>
+                  </div>
               </div>
-              <ul>
-                <li className="flex justify-between items-center mb-3">
-                  <div className="flex items-center">
-                    <img src="https://i.pravatar.cc/30?u=a" alt="Politics" className="rounded-full mr-3" />
-                    <span>Politics</span>
-                  </div>
-                  <span className="text-gray-400">125</span>
-                </li>
-                <li className="flex justify-between items-center mb-3">
-                  <div className="flex items-center">
-                    <img src="https://i.pravatar.cc/30?u=b" alt="Technology" className="rounded-full mr-3" />
-                    <span>Technology</span>
-                  </div>
-                  <span className="text-gray-400">104</span>
-                </li>
-                <li className="flex justify-between items-center mb-3">
-                  <div className="flex items-center">
-                    <img src="https://i.pravatar.cc/30?u=c" alt="Business" className="rounded-full mr-3" />
-                    <span>Business</span>
-                  </div>
-                  <span className="text-gray-400">42</span>
-                </li>
-                <li className="flex justify-between items-center mb-3">
-                  <div className="flex items-center">
-                    <img src="https://i.pravatar.cc/30?u=d" alt="Sports" className="rounded-full mr-3" />
-                    <span>Sports</span>
-                  </div>
-                  <span className="text-gray-400">18</span>
-                </li>
-                <li className="flex justify-between items-center">
-                  <div className="flex items-center">
-                    <img src="https://i.pravatar.cc/30?u=e" alt="Fashion" className="rounded-full mr-3" />
-                    <span>Fashion</span>
-                  </div>
-                  <span className="text-gray-400">9</span>
-                </li>
-              </ul>
-            </div>
           </div>
 
-          <div>
-            <hr className="border-t border-primary-text my-8" />
-
-            <div>
-              <ul>
-                <li className="mb-2">
-                  <a href="#" className="flex items-center p-3 rounded-lg hover:bg-primary-text">
-                    <Users size={20} className="mr-3" />
-                    Community
-                  </a>
-                </li>
-                <li className="mb-2">
-                  <a href="#" className="flex items-center p-3 rounded-lg hover:bg-primary-text">
-                    <Archive size={20} className="mr-3" />
-                    Resources
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="flex items-center p-3 rounded-lg hover:bg-primary-text">
-                    <Settings size={20} className="mr-3" />
-                    Support
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div className="mt-8 md:hidden">
-              <Link to="/profile" onClick={handleLinkClick} className="flex items-center p-3 rounded-lg hover:bg-primary-text">
-                <img src="https://i.pravatar.cc/40" alt="Michael C. Labastida" className="rounded-full mr-4" />
-                <div>
-                  <p className="font-bold">Michael C. Labastida</p>
-                  <p className="text-sm text-gray-400">View Profile</p>
-                </div>
-              </Link>
-            </div>
-          </div>
         </div>
       </aside>
       {isSidebarOpen && <div className="fixed inset-0 bg-black opacity-50 z-30 md:hidden" onClick={() => setIsSidebarOpen(false)}></div>}
