@@ -1,6 +1,19 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Vote, Home, FileText, Landmark, Tag, Star, Users, Archive, Settings, ChevronDown, X } from 'lucide-react';
+import {
+    Vote,
+    Home,
+    FileText,
+    Landmark,
+    Tag,
+    Star,
+    Users,
+    Archive,
+    Settings,
+    ChevronDown,
+    X,
+    Signature
+} from 'lucide-react';
 
 const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const location = useLocation();
@@ -13,7 +26,7 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
 
   return (
     <>
-      <aside className={`bg-secondary text-white w-72 p-8 h-full md:block ${isSidebarOpen ? 'fixed top-0 left-0 z-50 w-full h-full overflow-y-auto' : 'hidden'}`}>
+      <aside className={`bg-secondary text-white w-72 p-8 h-full md:block md:border-r md:border-[#222222] ${isSidebarOpen ? 'fixed top-0 left-0 z-50 w-full h-full overflow-y-auto' : 'hidden'}`}>
         <div className="md:hidden flex justify-end mb-4">
           <button onClick={() => setIsSidebarOpen(false)}>
             <X size={24} />
@@ -26,12 +39,12 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
                 <li className="mb-2">
                   <Link to="/" onClick={handleLinkClick} className={`flex items-center p-3 rounded-lg hover:bg-primary-text ${location.pathname === '/' ? 'bg-primary-text' : ''}`}>
                     <Home size={20} className="mr-3" />
-                    Home
+                    Forums
                   </Link>
                 </li>
                 <li className="mb-2">
                   <Link to="/petitions" onClick={handleLinkClick} className={`flex items-center p-3 rounded-lg hover:bg-primary-text ${location.pathname === '/petitions' ? 'bg-primary-text' : ''}`}>
-                    <FileText size={20} className="mr-3" />
+                    <Signature size={20} className="mr-3" />
                     Petitions
                   </Link>
                 </li>
@@ -74,10 +87,10 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
                               </a>
                           </li>
                           <li>
-                              <a href="#" className="flex items-center p-3 rounded-lg hover:bg-primary-text">
+                              <Link to="/settings" onClick={handleLinkClick} className={`flex items-center p-3 rounded-lg hover:bg-primary-text ${location.pathname === '/settings' ? 'bg-primary-text' : ''}`}>
                                   <Settings size={20} className="mr-3" />
                                   Settings
-                              </a>
+                              </Link>
                           </li>
                       </ul>
                   </div>

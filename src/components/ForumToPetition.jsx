@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import { v4 as uuidv4 } from 'uuid';
 import SlateEditor from './SlateEditor';
 import { DatePicker } from './DatePicker';
-import ConfirmationModal from './ConfirmationModal';
+import ConfirmationModal from './modals/ConfirmationModal';
 
 const ForumToPetition = () => {
   const [post, setPost] = useState(null);

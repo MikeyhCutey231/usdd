@@ -3,10 +3,10 @@ import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import toast from 'react-hot-toast';
 import { ThumbsUp, MessageCircle, Reply, Eye, Flag, MessageSquare, ChevronDown, FileText, ArrowLeft, RefreshCw } from 'lucide-react';
-import SignatureModal from './SignatureModal';
-import ProposedSolutionModal from './ProposedSolutionModal';
-import WithdrawPetitionModal from './WithdrawPetitionModal';
-import DraftLegalRevisionModal from './DraftLegalRevisionsModal';
+import SignatureModal from './modals/SignatureModal';
+import ProposedSolutionModal from './modals/ProposedSolutionModal';
+import WithdrawPetitionModal from './modals/WithdrawPetitionModal';
+import DraftLegalRevisionModal from './modals/DraftLegalRevisionsModal';
 
 const PetitionDetails = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);

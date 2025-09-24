@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { ThumbsUp, ThumbsDown, MessageCircle, Reply, Eye, MessageSquare, ChevronDown, Clock } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
-import LegalRevisionsCastVoteModal from './LegalRevisionsCastVoteModal';
+import LegalRevisionsCastVoteModal from './modals/LegalRevisionsCastVoteModal';
 
 const VoteLegalRevision = () => {
   const [legalRevision, setLegalRevision] = useState(null);
@@ -51,43 +51,6 @@ const VoteLegalRevision = () => {
     const updatedRevisions = storedLegalRevisions.map(rev => rev.id === id ? updatedLegalRevision : rev);
     localStorage.setItem('legalRevisions', JSON.stringify(updatedRevisions));
     setComment('');
-  };
-
-  const handleVote = (type) => {
-    let newVote = { ...legalRevision.vote };
-    let newVoted = voted;
-
-    if (type === 'yes') {
-      if (voted === 'yes') {
-        newVote.yes -= 1;
-        newVoted = null;
-      } else {
-        newVote.yes += 1;
-        if (voted === 'no') {
-          newVote.no -= 1;
-        }
-        newVoted = 'yes';
-      }
-    } else if (type === 'no') {
-      if (voted === 'no') {
-        newVote.no -= 1;
-        newVoted = null;
-      } else {
-        newVote.no += 1;
-        if (voted === 'yes') {
-          newVote.yes -= 1;
-        }
-        newVoted = 'no';
-      }
-    }
-
-    const updatedLegalRevision = { ...legalRevision, vote: newVote, voted: newVoted };
-    setLegalRevision(updatedLegalRevision);
-    setVoted(newVoted);
-
-    const storedLegalRevisions = JSON.parse(localStorage.getItem('legalRevisions')) || [];
-    const updatedRevisions = storedLegalRevisions.map(rev => rev.id === id ? updatedLegalRevision : rev);
-    localStorage.setItem('legalRevisions', JSON.stringify(updatedRevisions));
   };
 
   const renderSlateContent = (content) => {

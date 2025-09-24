@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { SimpleEditor } from '@/components/tiptap-templates/simple/simple-editor';
-import SuggestedRevisionModal from './SuggestedRevisionModal';
+import SuggestedRevisionModal from './modals/SuggestedRevisionModal';
 import toast from 'react-hot-toast';
 
 const DraftingLegalRevision = () => {

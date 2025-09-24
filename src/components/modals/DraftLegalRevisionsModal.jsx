@@ -3,7 +3,7 @@ import Select from 'react-select';
 import { X } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import toast from 'react-hot-toast';
-import { DatePicker } from './DatePicker';
+import { DatePicker } from '../DatePicker';
 
 const legalSpecialists = [
   { value: 'john-doe', label: 'John Doe', specialty: 'Constitutional Law', avatar: 'https://i.pravatar.cc/40?u=a' },

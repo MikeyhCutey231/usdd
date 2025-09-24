@@ -18,6 +18,7 @@ import AccountProfile from './components/AccountProfile';
 import PostDetails from './components/PostDetails';
 import ForumToPetition from './components/ForumToPetition';
 import SuggestEdit from './components/SuggestEdit';
+import Settings from './components/Settings';
 
 const AppContent = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -60,7 +61,7 @@ const AppContent = () => {
       <Header setIsSidebarOpen={setIsSidebarOpen} />
         <div className="flex">
           {showSidebar && (
-            <div className="hidden md:block md:w-72 md:border-r md:border-[#222222]">
+            <div className="hidden md:block md:w-72">
               <Sidebar />
             </div>
           )}
@@ -81,6 +82,7 @@ const AppContent = () => {
             <Route path="/profile/post/:id" element={<PostDetails />} />
             <Route path="/forum-to-petition/:id" element={<ForumToPetition />} />
             <Route path="/create-post" element={<CreatePost />} />
+            <Route path="/settings" element={<Settings />} />
           </Routes>
         </div>
       </div>
