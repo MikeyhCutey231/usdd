@@ -1,39 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { ThumbsUp, ThumbsDown, MessageCircle, Reply, Eye, MessageSquare, ChevronDown, Clock } from 'lucide-react';
+import { ThumbsUp, MessageCircle, Reply, Eye, MessageSquare, ChevronDown } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import LegalRevisionsCastVoteModal from './modals/LegalRevisionsCastVoteModal';
+import { useData } from '../DataContext';
 
 const VoteLegalRevision = () => {
-  const [legalRevision, setLegalRevision] = useState(null);
-  const [petition, setPetition] = useState(null);
-  const [post, setPost] = useState(null);
-  const [voted, setVoted] = useState(null);
+  const { id } = useParams();
+  const { legalRevisions, setLegalRevisions, petitions, posts } = useData();
+
+  const legalRevision = legalRevisions.find(l => l.id === id);
+  const petition = legalRevision ? petitions.find(p => p.id === legalRevision.petition_id) : null;
+  const post = petition ? posts.find(p => p.id === petition.post_id) : null;
+
   const [comment, setComment] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { id } = useParams();
-
-  useEffect(() => {
-    const storedLegalRevisions = JSON.parse(localStorage.getItem('legalRevisions')) || [];
-    const currentLegalRevision = storedLegalRevisions.find(l => l.id === id);
-    setLegalRevision(currentLegalRevision);
-    setVoted(currentLegalRevision.voted);
-
-    if (currentLegalRevision) {
-      const storedPetitions = JSON.parse(localStorage.getItem('petitions')) || [];
-      const currentPetition = storedPetitions.find(p => p.id === currentLegalRevision.petition_id);
-      setPetition(currentPetition);
-
-      if (currentPetition) {
-        const storedPosts = JSON.parse(localStorage.getItem('posts')) || [];
-        const currentPost = storedPosts.find(p => p.id === currentPetition.post_id);
-        setPost(currentPost);
-      }
-    }
-  }, [id]);
 
   if (!legalRevision || !petition || !post) {
-    return <div>Loading...</div>;
+    return <div className="text-white text-center p-12">Legal revision not found.</div>;
   }
 
   const handleComment = (e) => {
@@ -41,33 +25,32 @@ const VoteLegalRevision = () => {
     const newComment = {
       id: uuidv4(),
       author: 'Johnfritz Antipuesto',
-      text: comment,
-      date: 'Just now',
+      content: comment,
+      date: new Date().toISOString(),
     };
-    const updatedLegalRevision = { ...legalRevision, comments: [...legalRevision.comments, newComment] };
-    setLegalRevision(updatedLegalRevision);
-
-    const storedLegalRevisions = JSON.parse(localStorage.getItem('legalRevisions')) || [];
-    const updatedRevisions = storedLegalRevisions.map(rev => rev.id === id ? updatedLegalRevision : rev);
-    localStorage.setItem('legalRevisions', JSON.stringify(updatedRevisions));
+    const updatedRevisions = legalRevisions.map(rev => {
+      if (rev.id === id) {
+        return { ...rev, comments: [...(rev.comments || []), newComment] };
+      }
+      return rev;
+    });
+    setLegalRevisions(updatedRevisions);
     setComment('');
   };
 
   const renderSlateContent = (content) => {
-    if (!Array.isArray(content)) {
-      return <p className="text-[#DDDDDD]">{content}</p>;
+    if (typeof content !== 'string') {
+      return <p className="text-[#DDDDDD]">Invalid content</p>;
     }
-    return content.map((node, index) => {
-      if (node.type === 'paragraph') {
-        return (
-          <p key={index} className="text-[#DDDDDD]">
-            {node.children.map((child, childIndex) => (
-              <span key={childIndex}>{child.text}</span>
-            ))}
-          </p>
-        );
-      }
-      return null;
+
+    const lines = content.split('\n').map(line => line.trim()).filter(line => line);
+
+    return lines.map((line, index) => {
+      const parts = line.split('**');
+      const formattedLine = parts.map((part, i) => {
+        return i % 2 === 1 ? <strong key={i}>{part}</strong> : part;
+      });
+      return <p key={index} className="text-[#DDDDDD] mb-2">{formattedLine}</p>;
     });
   };
 
@@ -87,15 +70,15 @@ const VoteLegalRevision = () => {
             <div className="flex items-center space-x-4">
                 <div className="flex items-center">
                     <MessageSquare size={20} className="text-gray-400 mr-2" />
-                    <span>{legalRevision.comments.length}</span>
+                    <span>{(legalRevision.comments || []).length}</span>
                 </div>
             </div>
           </div>
           <div className="space-y-4 text-gray-300 mb-8">
-            {renderSlateContent(petition.proposed_solution)}
+            {renderSlateContent(legalRevision.content)}
           </div>
           
-          <h2 className="text-2xl font-bold mb-6">{legalRevision.comments.length} Comments</h2>
+          <h2 className="text-2xl font-bold mb-6">{(legalRevision.comments || []).length} Comments</h2>
           <div className="space-y-6">
             <form onSubmit={handleComment}>
               <div className="flex items-center mb-3">
@@ -111,13 +94,13 @@ const VoteLegalRevision = () => {
                 required
               />
             </form>
-            {legalRevision.comments.map(comment => (
+            {(legalRevision.comments || []).map(comment => (
               <div key={comment.id} className="flex items-start">
-                <img src="https://i.pravatar.cc/40?u=b" alt={comment.author} className="rounded-full mr-4" />
+                <img src={`https://i.pravatar.cc/40?u=${comment.author}`} alt={comment.author} className="rounded-full mr-4" />
                 <div className="flex-1">
                   <p className="font-bold">{comment.author}</p>
-                  <p className="text-sm text-gray-400 mb-2">{comment.date}</p>
-                  <p className="text-gray-300">{comment.text}</p>
+                  <p className="text-sm text-gray-400 mb-2">{new Date(comment.date).toLocaleDateString()}</p>
+                  <p className="text-gray-300">{comment.content}</p>
                   <div className="flex items-center mt-2 text-gray-400">
                     <button className="flex items-center mr-4 hover:text-white">
                       <ThumbsUp size={16} className="mr-1" /> 24
@@ -138,17 +121,17 @@ const VoteLegalRevision = () => {
           <div className="border border-[#2F2F2F] p-6 rounded-lg">
             <h3 className="text-lg font-bold mb-4">Vote Count</h3>
             <div className="w-full bg-gray-700 rounded-full h-2.5 mb-4 flex">
-                <div className="bg-green-500 h-2.5 rounded-l-full" style={{ width: `${(legalRevision.vote.yes / (legalRevision.vote.yes + legalRevision.vote.no)) * 100}%` }}></div>
-                <div className="bg-red-500 h-2.5 rounded-r-full" style={{ width: `${(legalRevision.vote.no / (legalRevision.vote.yes + legalRevision.vote.no)) * 100}%` }}></div>
+                <div className="bg-green-500 h-2.5 rounded-l-full" style={{ width: `${(legalRevision.supported_by.length / (legalRevision.supported_by.length + legalRevision.opposed_by.length)) * 100}%` }}></div>
+                <div className="bg-red-500 h-2.5 rounded-r-full" style={{ width: `${(legalRevision.opposed_by.length / (legalRevision.supported_by.length + legalRevision.opposed_by.length)) * 100}%` }}></div>
             </div>
             <div className="flex justify-between text-sm text-gray-400 mb-4">
                 <div className="flex items-center">
                     <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                    <span>Voted Yes {((legalRevision.vote.yes / (legalRevision.vote.yes + legalRevision.vote.no)) * 100).toFixed(2)}%</span>
+                    <span>Voted Yes {((legalRevision.supported_by.length / (legalRevision.supported_by.length + legalRevision.opposed_by.length)) * 100).toFixed(2)}%</span>
                 </div>
                 <div className="flex items-center">
                     <div className="w-2 h-2 bg-red-500 rounded-full mr-2"></div>
-                    <span>Voted No {((legalRevision.vote.no / (legalRevision.vote.yes + legalRevision.vote.no)) * 100).toFixed(2)}%</span>
+                    <span>Voted No {((legalRevision.opposed_by.length / (legalRevision.supported_by.length + legalRevision.opposed_by.length)) * 100).toFixed(2)}%</span>
                 </div>
             </div>
             <button onClick={() => setIsModalOpen(true)} className="w-full bg-primary text-black font-bold py-2 px-4 rounded-lg">Cast Vote</button>
@@ -156,7 +139,7 @@ const VoteLegalRevision = () => {
             <h3 className="text-lg font-bold mb-4">Petition Activity</h3>
             <ul className="space-y-2 text-gray-400">
               <li className="flex items-center">
-                <MessageSquare size={16} className="mr-2" /> {legalRevision.comments.length} comments
+                <MessageSquare size={16} className="mr-2" /> {(legalRevision.comments || []).length} comments
               </li>
               <li className="flex items-center">
                 <Eye size={16} className="mr-2" /> 1k watching
@@ -186,17 +169,10 @@ const VoteLegalRevision = () => {
                 <ChevronDown size={20} className="flex-shrink-0" />
               </li>
             </ul>
-            <hr className="border-t border-[#2F2F2F] my-6" />
-            <h3 className="text-lg font-bold mb-4">Tags</h3>
-            <div className="flex flex-wrap gap-2">
-              {post.tags.map((tag, i) => (
-                <span key={i} className="bg-[#333333] text-gray-300 px-3 py-1 rounded-full text-sm">{tag}</span>
-              ))}
-            </div>
           </div>
         </div>
       </div>
-      <LegalRevisionsCastVoteModal isOpen={isModalOpen} onClose={() => { setIsModalOpen(false); window.location.reload(); }} legalRevision={legalRevision} post={post} />
+      <LegalRevisionsCastVoteModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} legalRevision={legalRevision} post={post} />
     </main>
   );
 };

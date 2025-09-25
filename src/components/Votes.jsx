@@ -1,46 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Filter, ChevronDown, FileText } from 'lucide-react';
+import { Search, Filter, FileText } from 'lucide-react';
+import { useData } from '../DataContext';
 
 const VoteCard = ({ legalRevision }) => {
-
-  const renderSlateContent = (content) => {
-    if (!Array.isArray(content)) {
-      return <p className="text-[#DDDDDD]">{content}</p>;
-    }
-    return content.map((node, index) => {
-      if (node.type === 'paragraph') {
-        return (
-          <p key={index} className="text-[#DDDDDD]">
-            {node.children.map((child, childIndex) => (
-              <span key={childIndex}>{child.text}</span>
-            ))}
-          </p>
-        );
-      }
-      return null;
-    });
-  };
+  const yesVotes = legalRevision.supported_by.length;
+  const noVotes = legalRevision.opposed_by.length;
+  const totalVotes = yesVotes + noVotes;
+  const yesPercentage = totalVotes > 0 ? (yesVotes / totalVotes) * 100 : 0;
+  const noPercentage = totalVotes > 0 ? (noVotes / totalVotes) * 100 : 0;
 
   return (
     <Link to={`/vote-legal-revision/${legalRevision.id}`} className="block bg-[#222222] p-4 rounded-lg border border-transparent hover:border-primary">
       <h4 className="font-bold text-lg mb-2">{legalRevision.title}</h4>
       <div className="text-sm text-gray-400 mb-4 line-clamp-2">
-        {renderSlateContent(legalRevision.proposed_solution)}
+        <p className="text-[#DDDDDD]">{legalRevision.summary}</p>
       </div>
       <div className="flex justify-between items-center">
         <div>
-          <p className="font-bold">{legalRevision.vote.yes}</p>
+          <p className="font-bold">{yesVotes}</p>
           <p className="text-sm text-gray-400">Voted Yes</p>
         </div>
         <div>
-          <p className="font-bold">{legalRevision.vote.no}</p>
+          <p className="font-bold">{noVotes}</p>
           <p className="text-sm text-gray-400">Voted No</p>
         </div>
       </div>
       <div className="w-full bg-gray-700 rounded-full h-2.5 mt-4 flex">
-        <div className="bg-green-500 h-2.5 rounded-l-full" style={{ width: `${(legalRevision.vote.yes / (legalRevision.vote.yes + legalRevision.vote.no)) * 100}%` }}></div>
-        <div className="bg-red-500 h-2.5 rounded-r-full" style={{ width: `${(legalRevision.vote.no / (legalRevision.vote.yes + legalRevision.vote.no)) * 100}%` }}></div>
+        <div className="bg-green-500 h-2.5 rounded-l-full" style={{ width: `${yesPercentage}%` }}></div>
+        <div className="bg-red-500 h-2.5 rounded-r-full" style={{ width: `${noPercentage}%` }}></div>
       </div>
     </Link>
   );
@@ -48,28 +36,21 @@ const VoteCard = ({ legalRevision }) => {
 
 const Votes = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [legalRevisions, setLegalRevisions] = useState([]);
+  const { legalRevisions, petitions } = useData();
 
-  useEffect(() => {
-    const storedLegalRevisions = JSON.parse(localStorage.getItem('legalRevisions')) || [];
-    const storedPetitions = JSON.parse(localStorage.getItem('petitions')) || [];
-
-    const enrichedLegalRevisions = storedLegalRevisions
-      .filter(leg => leg.isActive)
-      .map(leg => {
-        const relatedPetition = storedPetitions.find(p => p.id === leg.petition_id);
-        return {
-          ...leg,
-          proposed_solution: relatedPetition ? relatedPetition.proposed_solution : 'No proposed solution found.'
-        };
-      });
-
-    setLegalRevisions(enrichedLegalRevisions);
-  }, []);
+  const enrichedLegalRevisions = legalRevisions
+    .filter(leg => leg.isActive)
+    .map(leg => {
+      const relatedPetition = petitions.find(p => p.id === leg.petition_id);
+      return {
+        ...leg,
+        summary: relatedPetition ? relatedPetition.description : 'No summary found.'
+      };
+    });
 
   return (
     <main className="flex-1 p-12 bg-[#1A1A1A] text-white">
-      {legalRevisions.length === 0 ? (
+      {enrichedLegalRevisions.length === 0 ? (
         <div className="flex flex-col items-center justify-center text-center text-gray-400 h-full pt-50">
           <FileText size={48} className="mb-4" />
           <p>No Bill to be voted at the moment</p>
@@ -107,8 +88,8 @@ const Votes = () => {
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {legalRevisions.map((legalRevision, index) => (
-              <VoteCard key={index} legalRevision={legalRevision} />
+            {enrichedLegalRevisions.map((legalRevision) => (
+              <VoteCard key={legalRevision.id} legalRevision={legalRevision} />
             ))}
           </div>
         </>

@@ -1,30 +1,25 @@
 import React from 'react';
 import toast from 'react-hot-toast';
-import { X, Clock, HelpCircle, AlarmClock } from 'lucide-react';
+import { X, HelpCircle, AlarmClock } from 'lucide-react';
+import { useData } from '../../DataContext';
 
-const SignatureModal = ({ isOpen, onClose, petition, post, onSignatureCast }) => {
+const SignatureModal = ({ isOpen, onClose, petition, post }) => {
+  const { petitions, setPetitions } = useData();
+
   if (!isOpen) return null;
 
   const handleSupport = () => {
-    const petitions = JSON.parse(localStorage.getItem('petitions')) || [];
     const updatedPetitions = petitions.map(p => {
       if (p.id === petition.id) {
-        const signedUsers = p.signedUsers || [];
-        if (signedUsers.includes('current_user_id')) { // Replace 'current_user_id' with actual user ID
-          toast.error('You have already signed this petition.');
-          return p;
-        }
         return {
           ...p,
-          signature_count: p.signature_count + 1,
-          signedUsers: [...signedUsers, 'current_user_id'], // Replace 'current_user_id'
+          signatures: p.signatures + 1,
         };
       }
       return p;
     });
-    localStorage.setItem('petitions', JSON.stringify(updatedPetitions));
+    setPetitions(updatedPetitions);
     toast.success('Successfully Supported this Petition.');
-    onSignatureCast();
     onClose();
   };
 
@@ -62,15 +57,14 @@ const SignatureModal = ({ isOpen, onClose, petition, post, onSignatureCast }) =>
           </div>
           <div className="mb-8">
             <p className="text-sm text-[#707070] mb-1">DESCRIPTION</p>
-            <p className="font-normal text-[#EFEFEF]">{petition.summary}</p>
+            <p className="font-normal text-[#EFEFEF]">{petition.description}</p>
           </div>
           <div className="mb-8">
             <p className="text-sm text-[#707070]">CREATED BY</p>
             <div className="flex items-center mt-2">
-              <img src="https://i.pravatar.cc/40" alt={post.author} className="rounded-full mr-4" />
+              <img src={`https://i.pravatar.cc/40?u=${post.author}`} alt={post.author} className="rounded-full mr-4" />
               <div>
                 <p className="font-bold text-white">{post.author}</p>
-                <p className="text-sm text-gray-400">Posted by: {post.posted}</p>
               </div>
             </div>
           </div>

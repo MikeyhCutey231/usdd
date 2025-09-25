@@ -1,70 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { v4 as uuidv4 } from 'uuid';
 import { SimpleEditor } from '@/components/tiptap-templates/simple/simple-editor';
-
-// Function to convert SlateJS object to HTML
-const slateToHtml = (slateObject) => {
-  if (!Array.isArray(slateObject)) return '';
-  return slateObject.map(node => {
-    const toHtml = (children) => children.map(child => {
-      let text = child.text;
-      if (child.bold) text = `<strong>${text}</strong>`;
-      if (child.italic) text = `<em>${text}</em>`;
-      if (child.underline) text = `<u>${text}</u>`;
-      return text;
-    }).join('');
-
-    switch (node.type) {
-      case 'paragraph':
-        return `<p>${toHtml(node.children)}</p>`;
-      // Add other cases for headings, lists etc. if needed
-      default:
-        return `<p>${toHtml(node.children)}</p>`;
-    }
-  }).join('');
-};
-
-// Function to convert Tiptap JSON back to SlateJS format (simplified)
-const tiptapToSlate = (tiptapJson) => {
-    if (!tiptapJson || !tiptapJson.content) return [];
-    return tiptapJson.content.map(node => {
-        if (node.type === 'paragraph') {
-            return {
-                type: 'paragraph',
-                children: node.content ? node.content.map(child => ({ text: child.text })) : [{ text: '' }]
-            };
-        }
-        return { type: 'paragraph', children: [{ text: '' }] };
-    });
-};
-
+import { useData } from '../DataContext';
 
 const SuggestEdit = () => {
-  const [legalRevision, setLegalRevision] = useState(null);
-  const [petition, setPetition] = useState(null);
-  const [initialContent, setInitialContent] = useState('');
-  const [editorContent, setEditorContent] = useState(null);
   const { id } = useParams();
   const navigate = useNavigate();
+  const { legalRevisions, petitions, suggestions, setSuggestions } = useData();
 
-  useEffect(() => {
-    const storedLegalRevisions = JSON.parse(localStorage.getItem('legalRevisions')) || [];
-    const currentLegalRevision = storedLegalRevisions.find(l => l.id === id);
-    setLegalRevision(currentLegalRevision);
+  const legalRevision = legalRevisions.find(l => l.id === id);
+  const petition = legalRevision ? petitions.find(p => p.id === legalRevision.petition_id) : null;
 
-    if (currentLegalRevision) {
-      const storedPetitions = JSON.parse(localStorage.getItem('petitions')) || [];
-      const currentPetition = storedPetitions.find(p => p.id === currentLegalRevision.petition_id);
-      setPetition(currentPetition);
-      if (currentPetition && currentPetition.proposed_solution) {
-        const htmlContent = slateToHtml(currentPetition.proposed_solution);
-        setInitialContent(htmlContent);
-      }
-    }
-  }, [id]);
+  const [editorContent, setEditorContent] = useState(null);
 
   const handleSubmit = () => {
     if (!editorContent) {
@@ -72,24 +22,21 @@ const SuggestEdit = () => {
       return;
     }
 
-    const newSlateContent = tiptapToSlate(editorContent);
-
     const newSuggestion = {
       id: uuidv4(),
       legal_revision_id: id,
-      suggested_solution: newSlateContent,
+      suggested_solution: editorContent,
       created_at: new Date().toISOString(),
     };
 
-    const suggestions = JSON.parse(localStorage.getItem('suggestions')) || [];
-    localStorage.setItem('suggestions', JSON.stringify([...suggestions, newSuggestion]));
+    setSuggestions([...suggestions, newSuggestion]);
 
     toast.success('Suggestion submitted successfully!');
     navigate(`/legal-revision/${id}`);
   };
 
   if (!legalRevision || !petition) {
-    return <div>Loading...</div>;
+    return <div className="text-white text-center p-12">Legal revision not found.</div>;
   }
 
   return (
@@ -103,15 +50,13 @@ const SuggestEdit = () => {
         <p className="text-lg text-gray-300 mb-8">You are suggesting an edit for: <span className="font-bold">{legalRevision.title}</span></p>
         
         <div className="rounded-lg p-1">
-            {initialContent && (
-                 <SimpleEditor
-                    initialContent={initialContent}
-                    onUpdate={(editor) => {
-                        const json = editor.getJSON();
-                        setEditorContent(json);
-                    }}
-                 />
-            )}
+            <SimpleEditor
+                initialContent={legalRevision.content}
+                onUpdate={(editor) => {
+                    const json = editor.getJSON();
+                    setEditorContent(json);
+                }}
+            />
         </div>
 
         <div className="flex justify-end mt-8">

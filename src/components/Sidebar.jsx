@@ -12,7 +12,7 @@ import {
     Settings,
     ChevronDown,
     X,
-    Signature
+    Signature, MessagesSquare
 } from 'lucide-react';
 
 const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
@@ -38,7 +38,7 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
               <ul>
                 <li className="mb-2">
                   <Link to="/" onClick={handleLinkClick} className={`flex items-center p-3 rounded-lg hover:bg-primary-text ${location.pathname === '/' ? 'bg-primary-text' : ''}`}>
-                    <Home size={20} className="mr-3" />
+                    <MessagesSquare size={20} className="mr-3" />
                     Forums
                   </Link>
                 </li>

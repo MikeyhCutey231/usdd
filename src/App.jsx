@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
+import { DataProvider } from './DataContext';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import Forum from './components/Forum';
@@ -28,33 +29,6 @@ const AppContent = () => {
   useEffect(() => {
     setIsSidebarOpen(false);
   }, [location]);
-
-  useEffect(() => {
-    const checkLegalRevisions = () => {
-      const legalRevisions = JSON.parse(localStorage.getItem('legalRevisions')) || [];
-      
-      const phTime = new Date().toLocaleString('en-US', { timeZone: 'Asia/Manila' });
-      const today = new Date(phTime);
-      today.setHours(0, 0, 0, 0);
-
-      let updated = false;
-      const updatedLegalRevisions = legalRevisions.map(leg => {
-        const endDate = new Date(leg.date?.to);
-        endDate.setHours(0, 0, 0, 0);
-
-        if (today.getTime() >= endDate.getTime() && leg.isActive === false) {
-          updated = true;
-          return { ...leg, isActive: true };
-        }
-        return leg;
-      });
-
-      if (updated) {
-        localStorage.setItem('legalRevisions', JSON.stringify(updatedLegalRevisions));
-      }
-    };
-    checkLegalRevisions();
-  }, []);
 
   return (
     <div className="bg-[#1A1A1A] min-h-screen">
@@ -101,8 +75,10 @@ const AppContent = () => {
 function App() {
   return (
     <Router>
-      <Toaster position="bottom-center" />
-      <AppContent />
+      <DataProvider>
+        <Toaster position="bottom-center" />
+        <AppContent />
+      </DataProvider>
     </Router>
   );
 }

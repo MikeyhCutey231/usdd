@@ -1,65 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { Clock, FileText } from 'lucide-react';
+import { useData } from '../DataContext';
 
 const PetitionCard = ({ petition }) => {
-  const today = new Date().toLocaleDateString('en-US', {
-    month: '2-digit',
-    day: '2-digit',
-    year: 'numeric',
-  });
+  const progress = (petition.signatures / petition.goal) * 100;
 
   return (
     <div className="bg-[#1E1E1E] rounded-lg border border-[#2F2F2F] flex flex-col">
       <div className="p-6">
         <h3 className="text-xl font-bold mb-2">{petition.title}</h3>
-        <p className="text-sm text-[#DDDDDD] mb-4">{petition.summary}</p>
+        <p className="text-sm text-[#DDDDDD] mb-4 line-clamp-3">{petition.description}</p>
         <p className="text-primary text-sm"># Submission Ordinance</p>
       </div>
-      {petition.isActive ? (
-        <div className="px-6 pb-6 mt-auto">
-          <div className="w-full bg-gray-700 rounded-full h-2.5 mb-2">
-            <div className="bg-primary h-2.5 rounded-full" style={{ width: `${(petition.signature_count / 5000) * 100}%` }}></div>
-          </div>
-          <p className="text-sm text-gray-400">{petition.signature_count} / 5000 Signatures</p>
+      <div className="px-6 pb-6 mt-auto">
+        <div className="w-full bg-gray-700 rounded-full h-2.5 mb-2">
+          <div className="bg-primary h-2.5 rounded-full" style={{ width: `${progress}%` }}></div>
         </div>
-      ) : (
-        <div className="border-t-2 border-b-2 border-[#222222] mt-auto">
-          <div className="flex items-center text-sm text-gray-400">
-            <div className="p-4">
-              <Clock size={24} className="text-primary" />
-            </div>
-            <div className="w-0.5 h-16 bg-[#222222]"></div>
-            <div className="p-4 flex-1 text-center text-white">
-              <p>START DATE</p>
-              <p>{today}</p>
-            </div>
-            <div className="w-0.5 h-16 bg-[#222222]"></div>
-            <div className="p-4 flex-1 text-center text-white">
-              <p>END DATE</p>
-              <p>{new Date(petition.date).toLocaleDateString('en-US', {
-                month: '2-digit',
-                day: '2-digit',
-                year: 'numeric',
-              })}</p>
-            </div>
-          </div>
-        </div>
-      )}
+        <p className="text-sm text-gray-400">{petition.signatures} / {petition.goal} Signatures</p>
+      </div>
       <div className="p-6 flex items-center justify-between">
         <div>
           <p className="text-sm text-gray-400">Status</p>
-          <p className="font-semibold">{petition.isActive ? 'Petition Active' : 'Petition Close'}</p>
+          <p className="font-semibold">Petition Active</p>
         </div>
-        <Link to={`/petition/${petition.id}`} style={{ pointerEvents: !petition.isActive || petition.signature_count >= 5000 ? 'none' : 'auto' }}>
-          <button
-            className={`py-2 px-4 rounded-lg text-sm font-semibold ${
-              petition.isActive && petition.signature_count < 5000
-                ? 'bg-[#AC952F] text-white border border-[#FAD83B]'
-                : 'bg-[#666666] text-[#222222] cursor-not-allowed'
-            }`}
-            disabled={!petition.isActive || petition.signature_count >= 5000}
-          >
+        <Link to={`/petition/${petition.id}`}>
+          <button className="bg-[#AC952F] text-white border border-[#FAD83B] py-2 px-4 rounded-lg text-sm font-semibold">
             Cast Signature
           </button>
         </Link>
@@ -69,12 +35,7 @@ const PetitionCard = ({ petition }) => {
 };
 
 const Petitions = () => {
-  const [petitions, setPetitions] = useState([]);
-
-  useEffect(() => {
-    const storedPetitions = JSON.parse(localStorage.getItem('petitions')) || [];
-    setPetitions(storedPetitions);
-  }, []);
+  const { petitions } = useData();
 
   return (
     <main className="flex-1 p-12 bg-secondary text-white">
@@ -88,11 +49,11 @@ const Petitions = () => {
           <h2 className="text-4xl font-bold mb-2">Petitions</h2>
           <div className="flex items-center text-primary mb-8">
             <div className="w-3 h-3 bg-primary rounded-full mr-2"></div>
-            <span>{petitions.filter(p => p.isActive).length} Active Petitions</span>
+            <span>{petitions.length} Active Petitions</span>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {petitions.map((petition, index) => (
-              <PetitionCard key={index} petition={petition} />
+            {petitions.map((petition) => (
+              <PetitionCard key={petition.id} petition={petition} />
             ))}
           </div>
         </>

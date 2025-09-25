@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import toast from 'react-hot-toast';
 import { ChevronDown } from 'lucide-react';
+import { useData } from '../DataContext';
 
 const tagOptions = [
   { value: 'politics', label: 'Politics' },
@@ -21,6 +22,7 @@ const CreatePost = () => {
   const [details, setDetails] = useState('');
   const [tags, setTags] = useState([]);
   const navigate = useNavigate();
+  const { posts, setPosts } = useData();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -28,16 +30,14 @@ const CreatePost = () => {
       id: uuidv4(),
       title,
       content: details,
-      tags: tags.map(tag => tag.label),
       author: 'Michael C. Labastida',
-      date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
-      posted: 'Just now',
+      date: new Date().toISOString(),
       likes: 0,
       comments: [],
+      tags: tags.map(tag => tag.label),
       isInPetition: false,
     };
-    const posts = JSON.parse(localStorage.getItem('posts')) || [];
-    localStorage.setItem('posts', JSON.stringify([newPost, ...posts]));
+    setPosts([newPost, ...posts]);
     toast.success('Forum submitted successfully!');
     navigate('/');
   };

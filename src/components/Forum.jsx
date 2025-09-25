@@ -1,14 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, MessageSquare } from 'lucide-react';
+import { useData } from '../DataContext';
 
 const Forum = () => {
-  const [posts, setPosts] = useState([]);
-
-  useEffect(() => {
-    const storedPosts = JSON.parse(localStorage.getItem('posts')) || [];
-    setPosts(storedPosts.filter(p => !p.isInPetition));
-  }, []);
+  const { posts } = useData();
+  const forumPosts = posts.filter(p => !p.isInPetition);
 
   return (
     <main className="flex-1 p-12 bg-secondary text-white min-h-screen w-full">
@@ -31,32 +28,31 @@ const Forum = () => {
       
       <hr className="border-t border-primary-text my-8" />
 
-      {posts.length > 0 ? (
+      {forumPosts.length > 0 ? (
         <div>
-          {posts.map((post, index) => (
+          {forumPosts.map((post, index) => (
             <div key={post.id}>
               <Link to={`/post/${post.id}`}>
                 <div>
                   <h3 className="text-xl font-bold hover:text-[#FAD83B]">{post.title}</h3>
-                  <p className="text-sm text-[#BBBBBB] mb-2">{post.date}</p>
+                  <p className="text-sm text-[#BBBBBB] mb-2">{new Date(post.date).toLocaleDateString()}</p>
                   <p className="text-gray-300 mb-4 line-clamp-2">{post.content}</p>
                 </div>
               </Link>
               <div className="flex items-center justify-between">
                 <div className="flex space-x-2">
-                  {post.tags.map((tag, i) => (
-                      <span key={i} className="bg-primary-text text-gray-300 px-3 py-1 rounded-full text-sm">{tag}</span>
+                  {(post.tags || []).map((tag, i) => (
+                    <span key={i} className="bg-primary-text text-gray-300 px-3 py-1 rounded-full text-sm">{tag}</span>
                   ))}
                 </div>
                 <div className="flex items-center">
-                  <img src="https://i.pravatar.cc/30" alt={post.author} className="rounded-full mr-3" />
+                  <img src={`https://i.pravatar.cc/30?u=${post.author}`} alt={post.author} className="rounded-full mr-3" />
                   <div>
                     <p className="font-bold">{post.author}</p>
-                    <p className="text-sm text-[#666666]">{post.posted}</p>
                   </div>
                 </div>
               </div>
-              {index < posts.length - 1 && <hr className="border-t border-primary-text my-8" />}
+              {index < forumPosts.length - 1 && <hr className="border-t border-primary-text my-8" />}
             </div>
           ))}
         </div>
@@ -67,7 +63,7 @@ const Forum = () => {
         </div>
       )}
 
-      {posts.length >= 10 && (
+      {forumPosts.length >= 10 && (
         <div className="flex justify-between items-center mt-8">
           <div className="flex items-center">
             <span>Result per page</span>

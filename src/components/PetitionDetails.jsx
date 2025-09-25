@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import toast from 'react-hot-toast';
@@ -7,83 +7,64 @@ import SignatureModal from './modals/SignatureModal';
 import ProposedSolutionModal from './modals/ProposedSolutionModal';
 import WithdrawPetitionModal from './modals/WithdrawPetitionModal';
 import DraftLegalRevisionModal from './modals/DraftLegalRevisionsModal';
+import { useData } from '../DataContext';
 
 const PetitionDetails = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSolutionModalOpen, setIsSolutionModalOpen] = useState(false);
   const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
   const [isDraftModalOpen, setIsDraftModalOpen] = useState(false);
-  const [petition, setPetition] = useState(null);
-  const [post, setPost] = useState(null);
   const [comment, setComment] = useState('');
-  const [isDrafted, setIsDrafted] = useState(false);
   const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
   const pageName = new URLSearchParams(location.search).get('page_name');
 
-  useEffect(() => {
-    const storedPetitions = JSON.parse(localStorage.getItem('petitions')) || [];
-    const currentPetition = storedPetitions.find(p => p.id === id);
-    setPetition(currentPetition);
+  const { petitions, setPetitions, posts, setPosts, legalRevisions } = useData();
 
-    const storedLegalRevisions = JSON.parse(localStorage.getItem('legalRevisions')) || [];
-    const drafted = storedLegalRevisions.some(rev => rev.petition_id === id);
-    setIsDrafted(drafted);
-
-    if (currentPetition) {
-      const storedPosts = JSON.parse(localStorage.getItem('posts')) || [];
-      const currentPost = storedPosts.find(p => p.id === currentPetition.post_id);
-      setPost(currentPost);
-    }
-  }, [id]);
+  const petition = petitions.find(p => p.id === id);
+  const post = petition ? posts.find(p => p.id === petition.post_id) : null;
+  const isDrafted = legalRevisions.some(rev => rev.petition_id === id);
 
   const handleLike = () => {
-    const posts = JSON.parse(localStorage.getItem('posts')) || [];
     const updatedPosts = posts.map(p => {
       if (p.id === post.id) {
-        const newLikes = p.liked ? p.likes - 1 : p.likes + 1;
-        return { ...p, likes: newLikes, liked: !p.liked };
+        return { ...p, likes: p.likes + 1 };
       }
       return p;
     });
-    localStorage.setItem('posts', JSON.stringify(updatedPosts));
-    setPost(updatedPosts.find(p => p.id === post.id));
+    setPosts(updatedPosts);
   };
 
   const handleComment = (e) => {
     e.preventDefault();
-    const posts = JSON.parse(localStorage.getItem('posts')) || [];
     const updatedPosts = posts.map(p => {
       if (p.id === post.id) {
         const newComment = {
           id: uuidv4(),
           author: 'Johnfritz Antipuesto',
-          text: comment,
-          date: 'Just now',
+          content: comment,
+          date: new Date().toISOString(),
         };
         return { ...p, comments: [...p.comments, newComment] };
       }
       return p;
     });
-    localStorage.setItem('posts', JSON.stringify(updatedPosts));
-    setPost(updatedPosts.find(p => p.id === post.id));
+    setPosts(updatedPosts);
     setComment('');
   };
 
   const handleWithdraw = () => {
-    const petitions = JSON.parse(localStorage.getItem('petitions')) || [];
     const updatedPetitions = petitions.filter(p => p.id !== petition.id);
-    localStorage.setItem('petitions', JSON.stringify(updatedPetitions));
+    setPetitions(updatedPetitions);
 
-    const posts = JSON.parse(localStorage.getItem('posts')) || [];
     const updatedPosts = posts.map(p => {
       if (p.id === petition.post_id) {
         return { ...p, isInPetition: false };
       }
       return p;
     });
-    localStorage.setItem('posts', JSON.stringify(updatedPosts));
+    setPosts(updatedPosts);
 
     setIsWithdrawModalOpen(false);
     toast.success('Petition Withdrawn Successfully.');
@@ -91,7 +72,7 @@ const PetitionDetails = () => {
   };
 
   if (!petition || !post) {
-    return <div>Loading...</div>;
+    return <div className="text-white text-center p-12">Petition not found.</div>;
   }
 
   return (
@@ -133,7 +114,7 @@ const PetitionDetails = () => {
                 </div>
               </div>
             </div>
-            <p className="text-gray-300 mb-8">{petition.background[0].children[0].text}</p>
+            <p className="text-gray-300 mb-8">{petition.description}</p>
             
             <h2 className="text-2xl font-bold mb-6">{post.comments.length} Comments</h2>
             <div className="space-y-6">
@@ -153,11 +134,11 @@ const PetitionDetails = () => {
               </form>
               {post.comments.map(c => (
                 <div key={c.id} className="flex items-start">
-                  <img src="https://i.pravatar.cc/40?u=b" alt={c.author} className="rounded-full mr-4" />
+                  <img src={`https://i.pravatar.cc/40?u=${c.author}`} alt={c.author} className="rounded-full mr-4" />
                   <div className="flex-1">
                     <p className="font-bold">{c.author}</p>
-                    <p className="text-sm text-gray-400 mb-2">{c.date}</p>
-                    <p className="text-gray-300">{c.text}</p>
+                    {c.date && <p className="text-sm text-gray-400 mb-2">{new Date(c.date).toLocaleDateString()}</p>}
+                    <p className="text-gray-300">{c.content}</p>
                     <div className="flex items-center mt-2 text-gray-400">
                       <button className="flex items-center mr-4 hover:text-white">
                         <ThumbsUp size={16} className="mr-1" /> 24
@@ -178,11 +159,11 @@ const PetitionDetails = () => {
           <div className="border border-primary-text p-6 rounded-lg">
               <h3 className="text-lg font-bold mb-4">Signature Count</h3>
               <div className="w-full bg-gray-700 rounded-full h-2.5 mb-2">
-                <div className="bg-green-500 h-2.5 rounded-full" style={{ width: `${(petition.signature_count / 5000) * 100}%` }}></div>
+                <div className="bg-green-500 h-2.5 rounded-full" style={{ width: `${(petition.signatures / petition.goal) * 100}%` }}></div>
               </div>
               <div className="flex items-center text-sm text-gray-400 mb-4">
                 <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                <span>{petition.signature_count} Signatures</span>
+                <span>{petition.signatures} Signatures</span>
               </div>
               <div className="flex items-stretch">
                 {pageName === 'accountProfilePetition' ? (
@@ -199,13 +180,13 @@ const PetitionDetails = () => {
                   <button
                     onClick={() => setIsModalOpen(true)}
                     className={`w-full font-bold py-2 px-4 rounded-lg ${
-                      petition.signedUsers?.includes('current_user_id') || petition.signature_count >= 5000
+                      petition.signatures >= petition.goal
                         ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
                         : 'bg-primary text-black'
                     }`}
-                    disabled={petition.signedUsers?.includes('current_user_id') || petition.signature_count >= 5000}
+                    disabled={petition.signatures >= petition.goal}
                   >
-                    {petition.signedUsers?.includes('current_user_id') ? 'Signed' : 'Vote Signature'}
+                    Vote Signature
                   </button>
                 )}
                 <button onClick={() => setIsSolutionModalOpen(true)} className="ml-2 p-2 bg-gray-700 rounded-lg">
@@ -249,13 +230,6 @@ const PetitionDetails = () => {
                   <ChevronDown size={20} className="flex-shrink-0" />
                 </li>
               </ul>
-            <hr className="border-t border-primary-text my-6" />
-              <h3 className="text-lg font-bold mb-4">Tags</h3>
-              <div className="flex flex-wrap gap-2">
-                {post.tags.map((tag, i) => (
-                  <span key={i} className="bg-[#333333] text-gray-300 px-3 py-1 rounded-full text-sm">{tag}</span>
-                ))}
-              </div>
             </div>
           </div>
         </div>
@@ -265,16 +239,12 @@ const PetitionDetails = () => {
         onClose={() => setIsModalOpen(false)}
         petition={petition}
         post={post}
-        onSignatureCast={() => {
-          const storedPetitions = JSON.parse(localStorage.getItem('petitions')) || [];
-          const currentPetition = storedPetitions.find(p => p.id === id);
-          setPetition(currentPetition);
-        }}
+        onSignatureCast={() => {}}
       />
       <ProposedSolutionModal
         isOpen={isSolutionModalOpen}
         onClose={() => setIsSolutionModalOpen(false)}
-        solution={petition.proposed_solution}
+        solution={petition.description}
       />
       <WithdrawPetitionModal
         isOpen={isWithdrawModalOpen}

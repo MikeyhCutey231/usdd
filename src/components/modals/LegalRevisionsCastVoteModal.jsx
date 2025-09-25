@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 import { X, AlarmClock, HelpCircle, Download } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
+import { useData } from '../../DataContext';
 
 const LegalRevisionsCastVoteModal = ({ isOpen, onClose, legalRevision, post }) => {
-  const [voted, setVoted] = useState(null);
+  const { legalRevisions, setLegalRevisions } = useData();
   const [selectedOption, setSelectedOption] = useState(null);
   const [transactionId, setTransactionId] = useState(null);
 
@@ -13,31 +15,30 @@ const LegalRevisionsCastVoteModal = ({ isOpen, onClose, legalRevision, post }) =
     if (!selectedOption) return;
 
     setTransactionId(`0x${uuidv4().replace(/-/g, '')}`);
-    const storedLegalRevisions = JSON.parse(localStorage.getItem('legalRevisions')) || [];
-    const updatedRevisions = storedLegalRevisions.map(rev => {
-      if (rev.id === legalRevision.id) {
-        const newVote = { ...rev.vote };
-        const currentVote = rev.voted;
+    
+    const currentUser = 'CurrentUser'; // Mock current user
 
-        if (currentVote) {
-          if (currentVote === 'yes') {
-            newVote.yes -= 1;
-          } else if (currentVote === 'no') {
-            newVote.no -= 1;
-          }
-        }
+    const updatedRevisions = legalRevisions.map(rev => {
+      if (rev.id === legalRevision.id) {
+        let supported = [...rev.supported_by];
+        let opposed = [...rev.opposed_by];
+        const newVote = { id: uuidv4(), voter: currentUser, comment: '' };
+
+        // Remove user from both arrays first to handle vote switching
+        supported = supported.filter(v => v.voter !== currentUser);
+        opposed = opposed.filter(v => v.voter !== currentUser);
 
         if (selectedOption === 'yes') {
-          newVote.yes += 1;
+          supported.push(newVote);
         } else if (selectedOption === 'no') {
-          newVote.no += 1;
+          opposed.push(newVote);
         }
-        return { ...rev, vote: newVote, voted: selectedOption };
+        return { ...rev, supported_by: supported, opposed_by: opposed };
       }
       return rev;
     });
-    localStorage.setItem('legalRevisions', JSON.stringify(updatedRevisions));
-    setVoted(selectedOption);
+    setLegalRevisions(updatedRevisions);
+    toast.success('Voting Successfully');
   };
 
   return (
@@ -46,7 +47,7 @@ const LegalRevisionsCastVoteModal = ({ isOpen, onClose, legalRevision, post }) =
         <div className="p-8 flex justify-between items-center">
           <h2 className="text-2xl font-bold text-white">Cast Vote</h2>
           <button onClick={onClose}>
-            <X size={24} class="text-white" />
+            <X size={24} className="text-white" />
           </button>
         </div>
         <div className="grid grid-cols-2 gap-4 border-t border-b border-[#1F1F1F]">
@@ -74,7 +75,7 @@ const LegalRevisionsCastVoteModal = ({ isOpen, onClose, legalRevision, post }) =
           </div>
           <div className="mb-8">
             <p className="text-xs font-semibold text-[#707070] mb-1">DESCRIPTION</p>
-            <p className="font-normal text-[#EFEFEF]">{post.content}</p>
+            <p className="font-normal text-[#EFEFEF]">{legalRevision.content}</p>
           </div>
           <div className="mb-4">
             <p className="text-xs font-semibold text-[#707070]">CREATED BY</p>
@@ -101,7 +102,7 @@ const LegalRevisionsCastVoteModal = ({ isOpen, onClose, legalRevision, post }) =
           </div>
           <button onClick={handleVote} className="w-full bg-primary text-black font-bold py-3 rounded-lg">Cast Secure Vote</button>
         </div>
-        {voted && (
+        {transactionId && (
           <div className="p-8">
             <div className="mt-4">
               <h3 className="text-2xl font-bold mb-4 text-white">Official Voter Receipt</h3>

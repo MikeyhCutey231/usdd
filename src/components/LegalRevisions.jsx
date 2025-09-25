@@ -1,27 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Filter, ChevronDown, FileText } from 'lucide-react';
+import { Search, Filter, FileText } from 'lucide-react';
+import { useData } from '../DataContext';
 
 const LegalRevisionCard = ({ legalRevision }) => {
   const dates = legalRevision.date ? `${new Date(legalRevision.date.from).toLocaleDateString()} - ${new Date(legalRevision.date.to).toLocaleDateString()}` : 'No dates specified';
-
-  const renderSlateContent = (content) => {
-    if (!Array.isArray(content)) {
-      return <p className="text-[#DDDDDD]">{content}</p>;
-    }
-    return content.map((node, index) => {
-      if (node.type === 'paragraph') {
-        return (
-          <p key={index} className="text-[#DDDDDD]">
-            {node.children.map((child, childIndex) => (
-              <span key={childIndex}>{child.text}</span>
-            ))}
-          </p>
-        );
-      }
-      return null;
-    });
-  };
 
   return (
     <div className="bg-primary-text rounded-lg border-l-4 border-primary">
@@ -32,11 +15,8 @@ const LegalRevisionCard = ({ legalRevision }) => {
             Drafting Phase
           </span>
         </div>
-        {legalRevision.updated_at && (
-          <p className="text-xs text-gray-400 mb-4">Last Updated at {new Date(legalRevision.updated_at).toLocaleDateString()}</p>
-        )}
         <div className="space-y-4 text-gray-400 border-t border-[#2F2F2F] pt-4 line-clamp-4">
-          {renderSlateContent(legalRevision.proposed_solution)}
+          <p className="text-[#DDDDDD]">{legalRevision.summary}</p>
         </div>
       </div>
       <div className="px-6 py-4 flex justify-between items-center">
@@ -53,28 +33,21 @@ const LegalRevisionCard = ({ legalRevision }) => {
 
 const LegalRevisions = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [legalRevisions, setLegalRevisions] = useState([]);
+  const { legalRevisions, petitions } = useData();
 
-  useEffect(() => {
-    const storedLegalRevisions = JSON.parse(localStorage.getItem('legalRevisions')) || [];
-    const storedPetitions = JSON.parse(localStorage.getItem('petitions')) || [];
-
-    const enrichedLegalRevisions = storedLegalRevisions
-      .filter(leg => !leg.isActive)
-      .map(leg => {
-        const relatedPetition = storedPetitions.find(p => p.id === leg.petition_id);
-        return {
-          ...leg,
-          proposed_solution: relatedPetition ? relatedPetition.proposed_solution : 'No proposed solution found.'
-        };
-      });
-
-    setLegalRevisions(enrichedLegalRevisions);
-  }, []);
+  const enrichedLegalRevisions = legalRevisions
+    .filter(leg => !leg.isActive)
+    .map(leg => {
+      const relatedPetition = petitions.find(p => p.id === leg.petition_id);
+      return {
+        ...leg,
+        summary: relatedPetition ? relatedPetition.description : 'No summary found.'
+      };
+    });
 
   return (
     <main className="flex-1 p-12 bg-[#1A1A1A] text-white">
-      {legalRevisions.length === 0 ? (
+      {enrichedLegalRevisions.length === 0 ? (
         <div className="flex flex-col items-center justify-center text-center text-gray-400 h-full pt-50">
           <FileText size={48} className="mb-4" />
           <p>There are currently no available legal revision</p>
@@ -112,8 +85,8 @@ const LegalRevisions = () => {
             </div>
           </div>
           <div className="space-y-8">
-            {legalRevisions.map((legalRevision, index) => (
-              <LegalRevisionCard key={index} legalRevision={legalRevision} />
+            {enrichedLegalRevisions.map((legalRevision) => (
+              <LegalRevisionCard key={legalRevision.id} legalRevision={legalRevision} />
             ))}
           </div>
         </>

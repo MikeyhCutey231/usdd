@@ -1,66 +1,55 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { ThumbsUp, MessageCircle, Reply, Eye, Flag, MessageSquare, ChevronDown, Trash2 } from 'lucide-react';
+import { useData } from '../DataContext';
 
 const ForumDetails = () => {
-  const [post, setPost] = useState(null);
-  const [comment, setComment] = useState('');
+  const { posts, setPosts } = useData();
   const { id } = useParams();
-
-  useEffect(() => {
-    const posts = JSON.parse(localStorage.getItem('posts')) || [];
-    const currentPost = posts.find(p => p.id === id);
-    setPost(currentPost);
-  }, [id]);
+  const post = posts.find(p => p.id === id);
+  const [comment, setComment] = useState('');
 
   const handleLike = () => {
-    const posts = JSON.parse(localStorage.getItem('posts')) || [];
     const updatedPosts = posts.map(p => {
       if (p.id === id) {
-        const newLikes = p.liked ? p.likes - 1 : p.likes + 1;
-        return { ...p, likes: newLikes, liked: !p.liked };
+        return { ...p, likes: p.likes + 1 };
       }
       return p;
     });
-    localStorage.setItem('posts', JSON.stringify(updatedPosts));
-    setPost(updatedPosts.find(p => p.id === id));
+    setPosts(updatedPosts);
   };
 
   const handleComment = (e) => {
     e.preventDefault();
-    const posts = JSON.parse(localStorage.getItem('posts')) || [];
     const updatedPosts = posts.map(p => {
       if (p.id === id) {
         const newComment = {
           id: uuidv4(),
           author: 'Johnfritz Antipuesto',
-          text: comment,
-          date: 'Just now',
+          content: comment,
+          date: new Date().toISOString(),
         };
         return { ...p, comments: [...p.comments, newComment] };
       }
       return p;
     });
-    localStorage.setItem('posts', JSON.stringify(updatedPosts));
-    setPost(updatedPosts.find(p => p.id === id));
+    setPosts(updatedPosts);
     setComment('');
   };
 
   const handleDeleteComment = (commentId) => {
-    const posts = JSON.parse(localStorage.getItem('posts')) || [];
     const updatedPosts = posts.map(p => {
       if (p.id === id) {
         return { ...p, comments: p.comments.filter(c => c.id !== commentId) };
       }
       return p;
     });
-    localStorage.setItem('posts', JSON.stringify(updatedPosts));
-    setPost(updatedPosts.find(p => p.id === id));
+    setPosts(updatedPosts);
   };
 
   if (!post) {
-    return <div>Loading...</div>;
+    return <div className="text-white text-center p-12">Post not found.</div>;
   }
 
   return (
@@ -70,16 +59,16 @@ const ForumDetails = () => {
           <h1 className="text-3xl font-bold mb-6">{post.title}</h1>
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center">
-              <img src="https://i.pravatar.cc/40" alt={post.author} className="rounded-full mr-4" />
+              <img src={`https://i.pravatar.cc/40?u=${post.author}`} alt={post.author} className="rounded-full mr-4" />
               <div>
                 <p className="font-bold">{post.author}</p>
-                <p className="text-sm text-gray-400">{post.posted}</p>
+                <p className="text-sm text-gray-400">{new Date(post.date).toLocaleDateString()}</p>
               </div>
             </div>
             <div className="flex items-center space-x-4">
               <div className="flex items-center">
                 <button onClick={handleLike} className="flex items-center">
-                  <Flag size={20} className={post.liked ? "text-yellow-500 mr-2" : "text-gray-400 mr-2"} />
+                  <Flag size={20} className="text-gray-400 mr-2" />
                   <span>{post.likes}</span>
                 </button>
               </div>
@@ -108,11 +97,11 @@ const ForumDetails = () => {
             </form>
             {post.comments.map((c) => (
               <div key={c.id} className="flex items-start">
-                <img src="https://i.pravatar.cc/40?u=b" alt={c.author} className="rounded-full mr-4" />
+                <img src={`https://i.pravatar.cc/40?u=${c.author}`} alt={c.author} className="rounded-full mr-4" />
                 <div className="flex-1">
                   <p className="font-bold">{c.author}</p>
-                  <p className="text-sm text-gray-400 mb-2">{c.date}</p>
-                  <p className="text-gray-300">{c.text}</p>
+                  {c.date && <p className="text-sm text-gray-400 mb-2">{new Date(c.date).toLocaleDateString()}</p>}
+                  <p className="text-gray-300">{c.content}</p>
                   <div className="flex items-center mt-2 text-gray-400">
                     <button className="flex items-center mr-4 hover:text-white">
                       <ThumbsUp size={16} className="mr-1" /> 24
@@ -175,7 +164,7 @@ const ForumDetails = () => {
             <hr className="border-t border-primary-text my-6" />
             <h3 className="text-lg font-semibold mb-4">Tags</h3>
             <div className="flex flex-wrap gap-2">
-              {post.tags.map((tag, i) => (
+              {(post.tags || []).map((tag, i) => (
                 <span key={i} className="bg-[#333333] text-gray-300 px-3 py-1 rounded-full text-sm">{tag}</span>
               ))}
             </div>
