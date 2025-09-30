@@ -49,7 +49,7 @@ const MarqueeItem = ({ text, isLight }) => {
 
 const Marquee = () => {
     return (
-        <div className="min-h-screen flex flex-col justify-center gap-[50px] overflow-hidden">
+        <div className="min-h-[50vh] md:min-h-screen flex flex-col justify-center gap-[50px] overflow-hidden">
             <MarqueeItem
                 isLight={true}
                 text="Join the discussion • Verify your voice on the blockchain • Propose new petitions • Shape laws together • Empower democracy through technology •"

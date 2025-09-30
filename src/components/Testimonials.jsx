@@ -58,9 +58,9 @@ const Testimonials = () => {
   }, { scope: container });
 
   return (
-    <div ref={container} className="bg-[#1a1a1a] text-white px-32 py-20">
-      <div className="grid grid-cols-4 grid-rows-3 gap-4 testimonials-grid">
-        <div className="col-span-1 row-span-1 bg-[#222222] border border-[#2F2F2F] rounded-lg p-6 testimonial-card cursor-box">
+    <div ref={container} className="bg-[#1a1a1a] text-white px-8 md:px-32 py-20">
+      <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-3 gap-4 testimonials-grid">
+        <div className="md:col-span-1 md:row-span-1 bg-[#222222] border border-[#2F2F2F] rounded-lg p-6 testimonial-card cursor-box">
             <div className="flex items-center mb-4">
             <img src={testimonials[0].avatar} alt={testimonials[0].name} className="w-12 h-12 rounded-full mr-4" />
             <div>
@@ -70,7 +70,7 @@ const Testimonials = () => {
             </div>
             <p className="text-gray-300">{testimonials[0].feedback}</p>
         </div>
-        <div className="col-span-1 row-span-1 bg-[#222222] border border-[#2F2F2F] rounded-lg p-6 testimonial-card cursor-box">
+        <div className="md:col-span-1 md:row-span-1 bg-[#222222] border border-[#2F2F2F] rounded-lg p-6 testimonial-card cursor-box">
             <div className="flex items-center mb-4">
             <img src={testimonials[1].avatar} alt={testimonials[1].name} className="w-12 h-12 rounded-full mr-4" />
             <div>
@@ -80,7 +80,7 @@ const Testimonials = () => {
             </div>
             <p className="text-gray-300">{testimonials[1].feedback}</p>
         </div>
-        <div className="col-span-1 row-span-1 bg-[#222222] border border-[#2F2F2F] rounded-lg p-6 testimonial-card cursor-box">
+        <div className="md:col-span-1 md:row-span-1 bg-[#222222] border border-[#2F2F2F] rounded-lg p-6 testimonial-card cursor-box">
             <div className="flex items-center mb-4">
             <img src={testimonials[2].avatar} alt={testimonials[2].name} className="w-12 h-12 rounded-full mr-4" />
             <div>
@@ -90,7 +90,7 @@ const Testimonials = () => {
             </div>
             <p className="text-gray-300">{testimonials[2].feedback}</p>
         </div>
-        <div className="col-span-1 row-span-2 bg-[#222222] border border-[#2F2F2F] rounded-lg p-6 testimonial-card cursor-box">
+        <div className="md:col-span-1 md:row-span-2 bg-[#222222] border border-[#2F2F2F] rounded-lg p-6 testimonial-card cursor-box">
             <div className="flex items-center mb-4">
             <img src={testimonials[3].avatar} alt={testimonials[3].name} className="w-12 h-12 rounded-full mr-4" />
             <div>
@@ -101,7 +101,7 @@ const Testimonials = () => {
             <p className="text-gray-300 mb-2">The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, making it look like natural, readable English.</p>
             <p className="text-gray-300">This prevents text layouts and design mockups from appearing unbalanced or distracting, allowing designers to focus on the overall visual presentation without being influenced by the content itself.</p>
         </div>
-        <div className="col-span-2 row-span-2">
+        <div className="md:col-span-2 md:row-span-2">
           <div className="bg-[#222222] border border-[#2F2F2F] rounded-lg p-4 testimonial-card cursor-box">
               <div className="flex justify-between items-center mb-4 pl-4 pr-4">
                   <h3 className="text-2xl font-medium">Website Statistics</h3>
@@ -128,7 +128,7 @@ const Testimonials = () => {
                 <h3 className="text-7xl font-bold text-gray-400">Client Feedbacks.</h3>
             </div>
         </div>
-        <div className="col-span-1 row-span-1 bg-[#222222] border border-[#2F2F2F] rounded-lg p-6 testimonial-card cursor-box">
+        <div className="md:col-span-1 md:row-span-1 bg-[#222222] border border-[#2F2F2F] rounded-lg p-6 testimonial-card cursor-box">
             <div className="flex items-center mb-4">
             <img src={testimonials[4].avatar} alt={testimonials[4].name} className="w-12 h-12 rounded-full mr-4" />
             <div>
@@ -138,7 +138,7 @@ const Testimonials = () => {
             </div>
             <p className="text-gray-300">{testimonials[4].feedback}</p>
         </div>
-        <div className="col-span-1 row-span-1 bg-[#222222] border border-[#2F2F2F] rounded-lg p-6 testimonial-card cursor-box">
+        <div className="md:col-span-1 md:row-span-1 bg-[#222222] border border-[#2F2F2F] rounded-lg p-6 testimonial-card cursor-box">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-bold">Visitors</h3>
             <Users className="text-gray-400" />
@@ -147,7 +147,7 @@ const Testimonials = () => {
           <p className="text-gray-400 text-sm">An overall total users who have an account</p>
         </div>
 
-          <div className="col-span-1 row-span-1 bg-[#222222] border border-[#2F2F2F] rounded-lg p-6 testimonial-card cursor-box">
+          <div className="md:col-span-1 md:row-span-1 bg-[#222222] border border-[#2F2F2F] rounded-lg p-6 testimonial-card cursor-box">
               <div className="flex justify-between items-center mb-4">
                   <h3 className="text-lg font-bold">Petitions</h3>
                   <Users className="text-gray-400" />

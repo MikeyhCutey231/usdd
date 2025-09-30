@@ -1,6 +1,6 @@
 import React, {useRef, useState, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Menu, X } from 'lucide-react';
 import TopForums from './TopForums';
 import Marquee from './Marquee';
 import LearnMore from './LearnMore';
@@ -17,6 +17,7 @@ const LandingPage = () => {
     const navigate = useNavigate();
     const container = useRef();
     const [animationComplete, setAnimationComplete] = useState(false);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     useEffect(() => {
         window.onbeforeunload = function () {
@@ -84,13 +85,14 @@ const LandingPage = () => {
                 animationComplete ? 'overflow-y-auto' : 'overflow-hidden'
             }`}
         >
-      <header className="w-full flex justify-between items-center py-4 px-32 pt-5 bg-secondary relative z-10 header-content">
+      <header className="w-full flex justify-between items-center py-4 px-8 md:px-32 pt-5 bg-secondary relative z-10 header-content">
         <div className="flex items-center">
           <div className="text-center">
             <h1 className="text-2xl font-extrabold text-primary leading-tight">Universal Secure</h1>
             <p className="text-xl text-white leading-tight font-medium -mt-1">Direct Democracy</p>
           </div>
-          <nav className="hidden md:flex ml-10">
+        </div>
+        <nav className="hidden md:flex ml-10">
             <ul className="flex space-x-6 items-center">
               <li className="flex items-center">
                 <a href="#" className="flex items-center hover:text-primary text-lg font-[400] ml-4">
@@ -109,29 +111,60 @@ const LandingPage = () => {
               </li>
             </ul>
           </nav>
-        </div>
         <div className="hidden md:flex items-center space-x-4">
           <button onClick={() => navigate('/forum')} className="text-white no-underline mr-8">Sign in</button>
           <a href="#" className="bg-[#AC952F] text-white font-medium py-2 px-3 rounded-lg flex items-center border border-primary">Contact Us</a>
         </div>
+        <div className="md:hidden">
+            <button onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+        </div>
       </header>
-      <main className="relative text-center w-full flex-grow flex items-center justify-center h-[700px]">
+      {isMenuOpen && (
+        <div className="md:hidden bg-secondary w-full z-20">
+          <nav className="flex flex-col items-center py-4">
+            <ul className="flex flex-col space-y-4 items-center">
+              <li className="flex items-center">
+                <a href="#" className="flex items-center hover:text-primary text-lg font-[400]">
+                  Features<ChevronDown size={16} className="ml-2" />
+                </a>
+              </li>
+              <li className="flex items-center">
+                <a href="#" className="flex items-center hover:text-primary text-lg font-[400]">
+                  Security<ChevronDown size={16} className="ml-2" />
+                </a>
+              </li>
+              <li>
+                <a href="#" className="flex items-center hover:text-primary text-lg font-[400]">
+                  Benefits
+                </a>
+              </li>
+            </ul>
+            <div className="flex flex-col items-center space-y-4 mt-4">
+              <button onClick={() => navigate('/forum')} className="text-white no-underline">Sign in</button>
+              <a href="#" className="bg-[#AC952F] text-white font-medium py-2 px-3 rounded-lg flex items-center border border-primary">Contact Us</a>
+            </div>
+          </nav>
+        </div>
+      )}
+      <main className="relative text-center w-full flex-grow flex items-center justify-center h-[700px] px-4 md:px-0">
         <div
           className="absolute inset-0 bg-cover bg-center opacity-20"
           style={{ backgroundImage: `url(${mapLanding1})` }}
         ></div>
         <div className="relative z-10">
-          <div className="inline-flex items-center bg-[#2a2a2a] rounded-full p-2 px-3 mb-15 top-badge">
+          <div className="inline-flex items-center bg-[#2a2a2a] rounded-full p-2 px-3 mb-8 md:mb-15 top-badge">
             <span className="bg-primary text-[#1a1a1a] rounded-full px-3 py-1 text-sm font-semibold">TOP#1</span>
             <span className="ml-3 mr-3 font-medium">Secured Voting System</span>
           </div>
-          <h1 className="text-5xl max-w-5xl mx-auto mb-5 typing-h1"></h1>
-          <p className="max-w-3xl mx-auto mb-10 mt-8 text-lg leading-relaxed paragraph-content">
+          <h1 className="text-3xl md:text-5xl max-w-5xl mx-auto mb-5 typing-h1"></h1>
+          <p className="max-w-3xl mx-auto mb-10 mt-8 text-base md:text-lg leading-relaxed paragraph-content">
             The system links to voter rolls without changes, recording all
             actions on a public ledger and paper backup for verification.
           </p>
-          <div className="action-buttons mt-20">
-            <button className="py-3 px-8 border border-primary rounded-lg mx-2 cursor-pointer bg-[#AC952F] text-white font-semibold start-post-btn">Start your post</button>
+          <div className="action-buttons mt-10 md:mt-20 flex flex-col md:flex-row items-center justify-center">
+            <button className="py-3 px-8 border border-primary rounded-lg mx-2 mb-4 md:mb-0 cursor-pointer bg-[#AC952F] text-white font-semibold start-post-btn">Start your post</button>
             <button className="py-3 px-8 border border-[#2F2F2F] rounded-lg mx-2 cursor-pointer bg-[#222222] text-white font-semibold doc-btn">Documentation</button>
           </div>
         </div>

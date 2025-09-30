@@ -105,16 +105,16 @@ const TopForums = () => {
   ];
 
   return (
-    <div ref={container} className="bg-[#1a1a1a] text-white px-32 w-full pt-50">
-      <div className="flex">
-        <aside className="w-1/4 pr-10 aside-content">
+    <div ref={container} className="bg-[#1a1a1a] text-white px-8 md:px-32 w-full py-16 md:pt-50">
+      <div className="flex flex-col md:flex-row">
+        <aside className="w-full md:w-1/4 pr-0 md:pr-10 aside-content mb-8 md:mb-0">
           <h2 className="text-2xl font-bold mb-5">Top Forums</h2>
-          <div className="border-l border-gray-400 pl-2 mt-28">
-            <ul>
+          <div className="border-l border-gray-400 pl-2 mt-8 md:mt-28">
+            <ul className="flex flex-row md:flex-col overflow-x-auto md:overflow-x-visible">
               {['Politics', 'News', 'International', 'Drama', 'Technology'].map((item, index) => (
                 <li
                   key={index}
-                  className="mb-3 flex items-center cursor-pointer"
+                  className="mb-3 flex items-center cursor-pointer flex-shrink-0 px-4 md:px-0"
                   onClick={() => setActive(item)}
                   onMouseEnter={() => setHovered(index)}
                   onMouseLeave={() => setHovered(null)}
@@ -126,12 +126,12 @@ const TopForums = () => {
             </ul>
           </div>
         </aside>
-        <div className="w-3/4">
+        <div className="w-full md:w-3/4">
           <h2 className="text-3xl font-semibold mb-4 header-content">Voice out your concern</h2>
           <p className="mb-5 text-gray-200 header-content">
               Online platforms where users discuss, ask questions, share information, and network on various topics. Top forums attract large, active communities seeking advice and resources.
           </p>
-          <div className="grid grid-cols-4 gap-5 mt-10 forums-grid">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mt-10 forums-grid">
             {forums.map((forum, index) => (
               <div key={index} className="bg-[#222222] border border-[#2F2F2F] rounded-lg p-4 forum-card">
                 <div className="relative">

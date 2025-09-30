@@ -102,16 +102,16 @@ const LearnMore = () => {
     };
 
     return (
-        <div ref={container} className="bg-[#1a1a1a] text-white px-32 w-full pt-20 pb-40">
-            <div className="flex">
-                <aside className="w-1/4 pr-10 aside-content">
+        <div ref={container} className="bg-[#1a1a1a] text-white px-8 md:px-32 w-full pt-20 pb-40">
+            <div className="flex flex-col md:flex-row">
+                <aside className="w-full md:w-1/4 pr-0 md:pr-10 aside-content mb-8 md:mb-0">
                     <h2 className="text-2xl font-bold mb-5">Our Ideal's</h2>
-                    <div className="border-l border-gray-400 pl-2 mt-28">
-                        <ul>
+                    <div className="border-l border-gray-400 pl-2 mt-8 md:mt-28">
+                        <ul className="flex flex-row md:flex-col overflow-x-auto md:overflow-x-visible">
                             {['About us', 'Offered Services', 'Security Features', 'Benefits'].map((item, index) => (
                                 <li
                                     key={index}
-                                    className="mb-3 flex items-center cursor-pointer"
+                                    className="mb-3 flex items-center cursor-pointer flex-shrink-0 px-4 md:px-0"
                                     onClick={() => setActive(item)}
                                     onMouseEnter={() => setHovered(index)}
                                     onMouseLeave={() => setHovered(null)}
@@ -123,13 +123,13 @@ const LearnMore = () => {
                         </ul>
                     </div>
                 </aside>
-                <div className="w-3/4">
+                <div className="w-full md:w-3/4">
                     <h2 className="text-3xl font-semibold mb-4 header-content">Learn more about us</h2>
                     <p className="mb-5 text-gray-200 header-content">
                         Our core values and principles serve as the foundation that guides our beliefs, decisions, and actions, consistently shaping our integrity, sense of purpose, and long-term vision for the future.
                     </p>
-                    <div className="grid grid-cols-5 gap-5 mt-10 learn-more-grid">
-                        <div className="col-span-2 bg-[#222222] border border-[#2F2F2F] rounded-lg learn-more-card flex flex-col overflow-hidden">
+                    <div className="grid grid-cols-1 md:grid-cols-5 gap-5 mt-10 learn-more-grid">
+                        <div className="col-span-1 md:col-span-2 bg-[#222222] border border-[#2F2F2F] rounded-lg learn-more-card flex flex-col overflow-hidden">
                             <div className="p-6">
                                 <div className="flex items-center mb-4">
                                     <Blocks className="text-2xl mr-4" />
@@ -137,7 +137,7 @@ const LearnMore = () => {
                                 </div>
                                 <p className="text-sm text-[#E9E9E9] leading-relaxed">Digital ledger that records transactions and tracks assets across a network of computers.</p>
                             </div>
-                            <div className="flex-grow h-48 pt-[30px]">
+                            <div className="flex-grow h-48 pt-[30px] hidden md:block">
                                 <svg width="403" height="258" viewBox="30 0 403 258" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M273.848 204.098L240.538 184.866L273.848 165.635L307.158 184.866L273.848 204.098Z" fill="#434343" stroke="#BBBBBB" strokeWidth="0.500908"/>
                                     <path d="M240.538 224.65L274.098 244.027V204.296L240.538 184.92V224.65Z" fill="#434343"/>
@@ -204,7 +204,7 @@ const LearnMore = () => {
                             </div>
                         </div>
 
-                        <div className="col-span-3 flex flex-col gap-5">
+                        <div className="col-span-1 md:col-span-3 flex flex-col gap-5">
                             <div ref={authCardRef} onMouseEnter={handleAuthHover} onMouseLeave={handleAuthHoverOut} className="bg-[#222222] border border-[#2F2F2F] rounded-lg learn-more-card overflow-hidden">
                                 <div className="p-6 pb-0">
                                     <div className="flex items-center mb-4">
