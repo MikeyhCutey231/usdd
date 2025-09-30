@@ -20,11 +20,13 @@ import PostDetails from './components/PostDetails';
 import ForumToPetition from './components/ForumToPetition';
 import SuggestEdit from './components/SuggestEdit';
 import Settings from './components/Settings';
+import LandingPage from './components/LandingPage';
 
 const AppContent = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
-  const showSidebar = !location.pathname.startsWith('/profile') && !location.pathname.startsWith('/forum-to-petition');
+  const showSidebar = !location.pathname.startsWith('/profile') && !location.pathname.startsWith('/forum-to-petition') && location.pathname !== '/';
+  const showHeader = location.pathname !== '/';
 
   useEffect(() => {
     setIsSidebarOpen(false);
@@ -32,7 +34,7 @@ const AppContent = () => {
 
   return (
     <div className="bg-[#1A1A1A] min-h-screen">
-      <Header setIsSidebarOpen={setIsSidebarOpen} />
+      {showHeader && <Header setIsSidebarOpen={setIsSidebarOpen} />}
         <div className="flex">
           {showSidebar && (
             <div className="hidden md:block md:w-72">
@@ -41,7 +43,8 @@ const AppContent = () => {
           )}
           <div className={`flex-1 overflow-y-auto no-scrollbar ${location.pathname.startsWith('/profile') ? 'z-0' : ''}`}>
           <Routes>
-            <Route path="/" element={<Forum />} />
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/forum" element={<Forum />} />
             <Route path="/petitions" element={<Petitions />} />
             <Route path="/petition/:id" element={<PetitionDetails />} />
             <Route path="/state-elections" element={<StateElections />} />

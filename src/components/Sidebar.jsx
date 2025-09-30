@@ -37,7 +37,7 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
             <nav>
               <ul>
                 <li className="mb-2">
-                  <Link to="/" onClick={handleLinkClick} className={`flex items-center p-3 rounded-lg hover:bg-primary-text ${location.pathname === '/' ? 'bg-primary-text' : ''}`}>
+                  <Link to="/forum" onClick={handleLinkClick} className={`flex items-center p-3 rounded-lg hover:bg-primary-text ${location.pathname === '/forum' ? 'bg-primary-text' : ''}`}>
                     <MessagesSquare size={20} className="mr-3" />
                     Forums
                   </Link>
